@@ -1,9 +1,10 @@
-module alu(clock, input_a, input_b, FunSel, ALUOut, flags);
+module alu(clock, input_a, input_b, cin, FunSel, ALUOut, flags);
 
     input wire clock;
     input wire [31:0] input_a;
     input wire [31:0] input_b;
     input wire [4:0] FunSel;
+    input wire cin;
 
     output reg [31:0] ALUOut;
     output reg [3:0] flags; // Z|C|N|V
@@ -22,7 +23,7 @@ module alu(clock, input_a, input_b, FunSel, ALUOut, flags);
     always @(posedge clock)
     begin
         Z <= 1'b0;
-        C <= 1'b0;
+        C <= cin;
         N <= 1'b0;
         O <= 1'b0;
 
