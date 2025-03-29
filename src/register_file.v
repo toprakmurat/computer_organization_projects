@@ -15,7 +15,7 @@ module register_file(clock, i, RegSel, ScrSel, FunSel, OutASel, OutBSel, OutA, O
 
     32_bit_register R1_reg (
         .clock(clock),
-        .enable(RegSel[0]),  
+        .enable(RegSel[3]),  
         .funSel(funSel),
         .i(i),
         .o(R1)
@@ -23,7 +23,7 @@ module register_file(clock, i, RegSel, ScrSel, FunSel, OutASel, OutBSel, OutA, O
 
     32_bit_register R2_reg (
         .clock(clock),
-        .enable(RegSel[1]),
+        .enable(RegSel[2]),
         .funSel(funSel),
         .i(i),
         .o(R2)
@@ -31,7 +31,7 @@ module register_file(clock, i, RegSel, ScrSel, FunSel, OutASel, OutBSel, OutA, O
 
     32_bit_register R3_reg (
         .clock(clock),
-        .enable(RegSel[2]),
+        .enable(RegSel[1]),
         .funSel(funSel),
         .i(i),
         .o(R3)
@@ -39,7 +39,7 @@ module register_file(clock, i, RegSel, ScrSel, FunSel, OutASel, OutBSel, OutA, O
 
     32_bit_register R4_reg (
         .clock(clock),
-        .enable(RegSel[3]),
+        .enable(RegSel[0]),
         .funSel(funSel),
         .i(i),
         .o(R4)
@@ -47,7 +47,7 @@ module register_file(clock, i, RegSel, ScrSel, FunSel, OutASel, OutBSel, OutA, O
 
     32_bit_register S1_reg (
         .clock(clock),
-        .enable(ScrSel[0]),
+        .enable(ScrSel[3]),
         .funSel(funSel),
         .i(i),
         .o(S1)
@@ -55,7 +55,7 @@ module register_file(clock, i, RegSel, ScrSel, FunSel, OutASel, OutBSel, OutA, O
 
     32_bit_register S2_reg (
         .clock(clock),
-        .enable(ScrSel[1]),
+        .enable(ScrSel[2]),
         .funSel(funSel),
         .i(i),
         .o(S2)
@@ -63,7 +63,7 @@ module register_file(clock, i, RegSel, ScrSel, FunSel, OutASel, OutBSel, OutA, O
 
     32_bit_register S3_reg (
         .clock(clock),
-        .enable(ScrSel[2]),
+        .enable(ScrSel[1]),
         .funSel(funSel),
         .i(i),
         .o(S3)
@@ -71,7 +71,7 @@ module register_file(clock, i, RegSel, ScrSel, FunSel, OutASel, OutBSel, OutA, O
 
     32_bit_register S4_reg (
         .clock(clock),
-        .enable(ScrSel[3]),
+        .enable(ScrSel[0]),
         .funSel(funSel),
         .i(i),
         .o(S4)
