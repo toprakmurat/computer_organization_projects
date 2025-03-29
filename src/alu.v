@@ -12,8 +12,8 @@ module alu(clock, input_a, input_b, cin, FunSel, ALUOut, flags);
     wire [31:0] b_complement_32_bit;
     assign b_complement_32_bit = ~input_b + 1;
 
-    wire [15:0] b_complement_16_bit;
-    assign b_complement_16_bit = ~{16'b0, input_b[15:0]} + 1;
+    wire [31:0] b_complement_16_bit;
+    assign b_complement_16_bit = {16'b0, (~input_b[15:0] + 1)};
 
     reg Z; // Zero
     reg C; // Carry
