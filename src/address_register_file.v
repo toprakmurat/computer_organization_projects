@@ -14,7 +14,7 @@ module address_register(clock, i, RegSel, FunSel, OutCSel, OutDSel, OutC, OutD);
 
     16_bit_register PC_reg (
         .clock(clock),
-        .enable(RegSel[0]),
+        .enable(RegSel[2]),
         .funSel(FunSel),
         .i(i),
         .o(PC)
@@ -30,7 +30,7 @@ module address_register(clock, i, RegSel, FunSel, OutCSel, OutDSel, OutC, OutD);
 
     16_bit_register AR_reg (
         .clock(clock),
-        .enable(RegSel[2]),
+        .enable(RegSel[0]),
         .funSel(FunSel),
         .i(i),
         .o(AR)
