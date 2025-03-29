@@ -14,9 +14,9 @@ module test_16_bit_register;
         .o(o)
     );
     
-    // Clock üretimi (her 10 birimlik zaman diliminde değişir)
+    
     always begin
-        #10 clock = ~clock;  // 10 birimlik periyot ile saat oluştur
+        #10 clock = ~clock;   
     end
     
 
@@ -24,7 +24,7 @@ module test_16_bit_register;
         // Başlangıç değerlerini ayarla
         clock = 0;
         enable = 0;
-        funSel = 2'b00;  // Decrement
+        funSel = 2'b00;  
         i = 16'b000000000000010;   // Test için rastgele bir değer 
 
         // Test 1: Enable 0, çıkışın değişmemesi gerektiğini kontrol et
@@ -35,26 +35,26 @@ module test_16_bit_register;
         // Test 2: Decrement 
         $display("Test 2: Decrement işlemi");
         enable = 1;
-        funSel = 2'b00;  // Decrement
+        funSel = 2'b00;  
         #20;
         $display("Output (Test 2): %b", o);
         
         // Test 3: Increment 
         $display("Test 3: Increment işlemi");
-        funSel = 2'b01;  // Increment
+        funSel = 2'b01;  
         #20;
         $display("Output (Test 3): %b", o);
         
         // Test 4: Load 
         $display("Test 4: Load işlemi");
         i = 16'b0001001000110100;    
-        funSel = 2'b10;  // Load
+        funSel = 2'b10;  
         #20;
         $display("Output (Test 4): %b", o);
         
         // Test 5: Clear 
         $display("Test 5: Clear işlemi");
-        funSel = 2'b11;  // Clear
+        funSel = 2'b11;  
         #20;
         $display("Output (Test 5): %b", o);
         
