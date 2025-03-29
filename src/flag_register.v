@@ -13,6 +13,7 @@ module flag_register(clock, Z, C, N, O, flag_reg, carry);
         flag_reg <= {Z, C, N, O}; 
         carry <= flag_reg[2];
     end
+
  
 
 endmodule

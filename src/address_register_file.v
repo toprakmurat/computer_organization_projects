@@ -1,11 +1,11 @@
-module address_register(clock, i, RegSel, FunSel, OutASel, OutBSel, OutC, OutD);
+module address_register(clock, i, RegSel, FunSel, OutCSel, OutDSel, OutC, OutD);
 
     input wire clock;
     input wire [31:0] i;
     input wire [2:0] RegSel;
     input wire [1:0] FunSel;
-    input wire [1:0] OutASel;
-    input wire [1:0] OutBSel;
+    input wire [1:0] OutCSel;
+    input wire [1:0] OutDSel;
 
     output reg [15:0] OutC;
     output reg [15:0] OutD;
@@ -38,7 +38,7 @@ module address_register(clock, i, RegSel, FunSel, OutASel, OutBSel, OutC, OutD);
 
     always @(posedge clock)
     begin
-        case (OutASel)
+        case (OutCSel)
             2'b00: OutC <= PC;
             2'b01: OutC <= SP;
             2'b10: OutC <= AR;
@@ -46,7 +46,7 @@ module address_register(clock, i, RegSel, FunSel, OutASel, OutBSel, OutC, OutD);
             default: OutC <= 16'b0;
         endcase
 
-        case (OutBSel)
+        case (OutDSel)
             2'b00: OutD <= PC;
             2'b01: OutD <= SP;
             2'b10: OutD <= AR;
