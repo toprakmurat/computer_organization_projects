@@ -79,10 +79,7 @@ module alu(clock, input_a, input_b, cin, FunSel, ALUOut, flags);
         endcase
 
         // Zero
-        if (FunSel[4] == 0)  
-            Z <= (ALUOut[15:0] == 16'b0); // 16-bit işlemler için
-        else  
-            Z <= (ALUOut == 32'b0);// 32-bit işlemler için
+        Z <= (ALUOut == 32'b0);// 16-bit ve 32-bit işlemler için
 
         // Carry
         if (FunSel[4] == 0) // 16-bit işlemler için
@@ -107,11 +104,9 @@ module alu(clock, input_a, input_b, cin, FunSel, ALUOut, flags);
             else if(FunSel[3:0] == 4'b1100 || FunSel[3:0] == 4'b1111) // LSR A veya CSR A
             C <= (input_a[0] == 1);
             end
+            
         // Negative
-        if (FunSel[4] == 0)  
-            N <= (ALUOut[15] == 1); // 16-bit işlemler için
-        else  
-            N <= (ALUOut[31] == 1);// 32-bit işlemler için
+        N <= (ALUOut[31] == 1);// 16-bit ve 32-bit işlemler için
 
         // Overflow
         if(FunSel == 5'b00100 || FunSel == 5'b00101 || FunSel == 5'b00110)
