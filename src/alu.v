@@ -20,7 +20,7 @@ module alu(clock, input_a, input_b, cin, FunSel, ALUOut, flags);
     reg N; // Negative
     reg O; // Overflow
 
-    `define SIGN_EXTEND(value) {{16{value[15]}}, value} // 16 bitlik değeri 32 bitlik yapar 
+    `define SIGN_EXTEND(value) {{16{value[15]}}, value} // 16 biti 32 bit yapıyor sign extension ile
 
 
     always @(posedge clock)
@@ -33,22 +33,26 @@ module alu(clock, input_a, input_b, cin, FunSel, ALUOut, flags);
         case (FunSel)
         //16 bitlik kısım, A ve B nin son 16bitiyle işlem yapılıyor
         // A ya da B yi direkt eşitle
-        5'b00000: ALUOut <= `SIGN_EXTEND(input_a[15:0]); // Pass A (16-bit)
-        5'b00001: ALUOut <= `SIGN_EXTEND(input_b[15:0]); // Pass B (16-bit)
-        5'b00010: ALUOut <= `SIGN_EXTEND(~input_a[15:0]); // NOT A (16-bit)
-        5'b00011: ALUOut <= `SIGN_EXTEND(~input_b[15:0]); // NOT B (16-bit)
-        5'b00100: ALUOut <= `SIGN_EXTEND(input_a[15:0] + input_b[15:0]); // A + B (16-bit)
-        5'b00101: ALUOut <= `SIGN_EXTEND(input_a[15:0] + input_b[15:0] + C); // A + B + Carry (16-bit)
-        5'b00110: ALUOut <= `SIGN_EXTEND(input_a[15:0] + b_complement_16_bit); // A - B (16-bit)
-        5'b00111: ALUOut <= `SIGN_EXTEND(input_a[15:0] & input_b[15:0]); // A AND B (16-bit)
-        5'b01000: ALUOut <= `SIGN_EXTEND(input_a[15:0] | input_b[15:0]); // A OR B (16-bit)
-        5'b01001: ALUOut <= `SIGN_EXTEND(input_a[15:0] ^ input_b[15:0]); // A XOR B (16-bit)
-        5'b01010: ALUOut <= `SIGN_EXTEND(~(input_a[15:0] & input_b[15:0])); // A NAND B (16-bit)
-        5'b01011: ALUOut <= `SIGN_EXTEND(input_a[15:0] << 1); // LSL A (16-bit)
-        5'b01100: ALUOut <= `SIGN_EXTEND(input_a[15:0] >> 1); // LSR A (16-bit)
-        5'b01101: ALUOut <= `SIGN_EXTEND($signed(input_a[15:0]) >>> 1); // ASR A (16-bit)
-        5'b01110: ALUOut <= `SIGN_EXTEND({input_a[14:0],C}); // CSL A (16-bit)
-        5'b01111: ALUOut <= `SIGN_EXTEND({C, input_a[15:1]}); // CSR A (16-bit)
+        5'b00000: ALUOut <= `SIGN_EXTEND(input_a[15:0]); 
+        5'b00001: ALUOut <= `SIGN_EXTEND(input_b[15:0]);
+        // not A ya da not B
+        5'b00010: ALUOut <= `SIGN_EXTEND(~input_a[15:0]); 
+        5'b00011: ALUOut <= `SIGN_EXTEND(~input_b[15:0]); 
+        // A + B , A + B + carry, A - B
+        5'b00100: ALUOut <= `SIGN_EXTEND(input_a[15:0] + input_b[15:0]);
+        5'b00101: ALUOut <= `SIGN_EXTEND(input_a[15:0] + input_b[15:0] + C); 
+        5'b00110: ALUOut <= `SIGN_EXTEND(input_a[15:0] + b_complement_16_bit); 
+        // A & B, A | B, A ^ B, ~(A & B)
+        5'b00111: ALUOut <= `SIGN_EXTEND(input_a[15:0] & input_b[15:0]);
+        5'b01000: ALUOut <= `SIGN_EXTEND(input_a[15:0] | input_b[15:0]);
+        5'b01001: ALUOut <= `SIGN_EXTEND(input_a[15:0] ^ input_b[15:0]);
+        5'b01010: ALUOut <= `SIGN_EXTEND(~(input_a[15:0] & input_b[15:0])); 
+        // LSL A, LSR A, ASR A, CSL A, CSR A
+        5'b01011: ALUOut <= `SIGN_EXTEND(input_a[15:0] << 1);
+        5'b01100: ALUOut <= `SIGN_EXTEND(input_a[15:0] >> 1);
+        5'b01101: ALUOut <= `SIGN_EXTEND($signed(input_a[15:0]) >>> 1); 
+        5'b01110: ALUOut <= `SIGN_EXTEND({input_a[14:0],C}); 
+        5'b01111: ALUOut <= `SIGN_EXTEND({C, input_a[15:1]});
         // 32 bitlik kısım
         // A ya da B yi direkt eşitle
         5'b10000: ALUOut <= input_a;
