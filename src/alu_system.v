@@ -34,7 +34,8 @@ module alu_system(clock, RegSel, ScrSel, FunSel3, OutASel, OutBSel, MuxDSel, Fun
 
     wire [31:0] w1, w2, w3, w5, w6, w12, w13;
     wire [15:0] w4, w14;
-    wire [7:0] w7, w9, w10, w11;
+    wire [7:0]  w9, w10, w11;
+    wire [3:0] w7;
     wire w8;
 
     register_file rf_1 (
