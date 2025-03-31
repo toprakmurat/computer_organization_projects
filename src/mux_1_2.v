@@ -8,7 +8,7 @@ module mux_1_2 (clock, select, i0, i1, o);
     always @(posedge clock)
     begin
         if(select)
-            o <= i1;
+            o <= {{16{i1[15]}}, i1};
         else
             o <= i0;
     end
