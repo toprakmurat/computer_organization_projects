@@ -61,15 +61,11 @@ module alu_system(clock, RegSel, ScrSel, FunSel3, OutASel, OutBSel, MuxDSel, Fun
         .cin(w8),
         .FunSel(FunSel5),
         .ALUOut(w6),  
-        .flags(w7)  // buna bak
+        .flags(w7)
     );
 
     flag_register flag_register_1 (
         .clock(clock),
-        .Z(),
-        .C(),
-        .N(),  /// buraya bak tam nasıl yapılacak
-        .O(),
         .flag_reg(w7),
         .carry(w8)
     );
