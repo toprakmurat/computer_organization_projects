@@ -62,7 +62,7 @@ module alu(clock, input_a, input_b, cin, FunSel, ALUOut, flags);
         5'b10011: ALUOut <= ~input_b;
         // A + B , A + B + carry, A - B
         5'b10100: ALUOut <= input_a + input_b;
-        5'b10101: ALUOut <= input_a + input_b + flags[2];
+        5'b10101: ALUOut <= input_a + input_b + C;
         5'b10110: ALUOut <= input_a + b_complement_32_bit;
         // A & B, A | B, A ^ B, ~(A & B)
         5'b10111: ALUOut <= input_a & input_b;
@@ -104,7 +104,7 @@ module alu(clock, input_a, input_b, cin, FunSel, ALUOut, flags);
             else if(FunSel[3:0] == 4'b1100 || FunSel[3:0] == 4'b1111) // LSR A veya CSR A
             C <= (input_a[0] == 1);
             end
-            
+
         // Negative
         N <= (ALUOut[31] == 1);// 16-bit ve 32-bit işlemler için
 
