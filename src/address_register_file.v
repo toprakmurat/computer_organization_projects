@@ -16,7 +16,7 @@ module address_register(clock, i, RegSel, FunSel, OutCSel, OutDSel, OutC, OutD);
         .clock(clock),
         .enable(RegSel[2]),
         .funSel(FunSel),
-        .i(i),
+        .i(i[15:0]),
         .o(PC)
     );
 
@@ -24,7 +24,7 @@ module address_register(clock, i, RegSel, FunSel, OutCSel, OutDSel, OutC, OutD);
         .clock(clock),
         .enable(RegSel[1]),
         .funSel(FunSel),
-        .i(i),
+        .i(i[15:0]),
         .o(SP)
     );
 
@@ -32,7 +32,7 @@ module address_register(clock, i, RegSel, FunSel, OutCSel, OutDSel, OutC, OutD);
         .clock(clock),
         .enable(RegSel[0]),
         .funSel(FunSel),
-        .i(i),
+        .i(i[15:0]),
         .o(AR)
     );
 
