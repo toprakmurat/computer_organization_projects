@@ -11,8 +11,8 @@ module instruction_register(clock, i, o, LH, write);
         if(!write)
             o <= o;
         else if(!LH)
-            o[7:0] <= i[7:0];
+            o <= {i, o[7:0]};
         else
-            o[15:8] <= i[7:0];
+            o <= {o[15:8], i};
     end
 endmodule
