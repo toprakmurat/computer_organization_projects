@@ -68,7 +68,7 @@ module alu(clock, input_a, input_b, cin, FunSel, ALUOut, flags);
         5'b10111: ALUOut <= input_a & input_b;
         5'b11000: ALUOut <= input_a | input_b;
         5'b11001: ALUOut <= input_a ^ input_b;
-        5'b11010: ALUOut <= ~input_a & input_b;
+        5'b11010: ALUOut <= ~(input_a & input_b);
         // LSL A, LSR A, ASR A, CSL A, CSR A
         5'b11011: ALUOut <= input_a << 1;
         5'b11100: ALUOut <= input_a >> 1;
