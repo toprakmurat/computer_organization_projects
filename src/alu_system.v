@@ -1,4 +1,4 @@
-module alu_system(clock, RegSel, ScrSel, FunSel3, OutASel, OutBSel, MuxDSel, FunSel5, MuxCSel, LH, write, IROut, E, FunSel2_dr, MuxASel, MuxBSel, FunSel2_arf, RegSel, OutDSel, OutCSel);
+module alu_system(clock, RegSel, ScrSel, FunSel3, OutASel, OutBSel, MuxDSel, FunSel5, MuxCSel, LH, write, IROut, E, FunSel2_dr, MuxASel, MuxBSel, FunSel2_arf, RegSel, OutDSel, OutCSel, WR, CS);
     input wire clock;
 
     input wire [3:0] RegSel_rf;
@@ -28,6 +28,9 @@ module alu_system(clock, RegSel, ScrSel, FunSel3, OutASel, OutBSel, MuxDSel, Fun
     input wire [2:0] RegSel_arf;
     input wire [1:0] OutDSel;
     input wire [1:0] OutCSel;
+
+    input wire WR;
+    input wire CS;
 
     wire [31:0] w1, w2, w3, w5, w6, w12, w13;
     wire [15:0] w4, w14;
@@ -82,9 +85,9 @@ module alu_system(clock, RegSel, ScrSel, FunSel3, OutASel, OutBSel, MuxDSel, Fun
 
     memory memory_1 (
         .Address(w14),
-        .Data(),
-        .WR(),
-        .CS(), // burayada bak
+        .Data(w9),
+        .WR(WR),
+        .CS(CS), 
         .Clock(clock),
         .MemOut(w10)
     );
