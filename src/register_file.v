@@ -13,69 +13,67 @@ module register_file(clock, i, RegSel, ScrSel, FunSel, OutASel, OutBSel, OutA, O
 
     wire [31:0] R1, R2, R3, R4, S1, S2, S3, S4;
 
-    32_bit_register R1_reg (
-        .clock(clock),
-        .enable(RegSel[3]),  
-        .funSel(funSel),
-        .i(i),
-        .o(R1)
+
+    Register32bit R1_reg(
+        .I(i),
+        .E(RegSel[3]),
+        .FunSel(funSel),
+        .Clock(clock),
+        .Q(R1)
+    );
+    Register32bit R2_reg(
+        .I(i),
+        .E(RegSel[2]),
+        .FunSel(funSel),
+        .Clock(clock),
+        .Q(R2)
+    );
+    Register32bit R3_reg(
+        .I(i),
+        .E(RegSel[1]),
+        .FunSel(funSel),
+        .Clock(clock),
+        .Q(R3)
     );
 
-    32_bit_register R2_reg (
-        .clock(clock),
-        .enable(RegSel[2]),
-        .funSel(funSel),
-        .i(i),
-        .o(R2)
+    Register32bit R4_reg(
+        .I(i),
+        .E(RegSel[0]),
+        .FunSel(funSel),
+        .Clock(clock),
+        .Q(R4)
     );
 
-    32_bit_register R3_reg (
-        .clock(clock),
-        .enable(RegSel[1]),
-        .funSel(funSel),
-        .i(i),
-        .o(R3)
+
+    Register32bit S1_reg(
+        .I(i),
+        .E(ScrSel[3]),
+        .FunSel(funSel),
+        .Clock(clock),
+        .Q(S1)
+    );
+    Register32bit S2_reg(
+        .I(i),
+        .E(ScrSel[2]),
+        .FunSel(funSel),
+        .Clock(clock),
+        .Q(S2)
+    );
+    Register32bit S3_reg(
+        .I(i),
+        .E(ScrSel[1]),
+        .FunSel(funSel),
+        .Clock(clock),
+        .Q(S3)
+    );
+    Register32bit S4_reg(
+        .I(i),
+        .E(ScrSel[0]),
+        .FunSel(funSel),
+        .Clock(clock),
+        .Q(S4)
     );
 
-    32_bit_register R4_reg (
-        .clock(clock),
-        .enable(RegSel[0]),
-        .funSel(funSel),
-        .i(i),
-        .o(R4)
-    );
-
-    32_bit_register S1_reg (
-        .clock(clock),
-        .enable(ScrSel[3]),
-        .funSel(funSel),
-        .i(i),
-        .o(S1)
-    );
-
-    32_bit_register S2_reg (
-        .clock(clock),
-        .enable(ScrSel[2]),
-        .funSel(funSel),
-        .i(i),
-        .o(S2)
-    );
-
-    32_bit_register S3_reg (
-        .clock(clock),
-        .enable(ScrSel[1]),
-        .funSel(funSel),
-        .i(i),
-        .o(S3)
-    );
-
-    32_bit_register S4_reg (
-        .clock(clock),
-        .enable(ScrSel[0]),
-        .funSel(funSel),
-        .i(i),
-        .o(S4)
-    );
 
     always @(posedge clock) begin
         case (OutASel)
