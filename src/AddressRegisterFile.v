@@ -1,7 +1,7 @@
-module AddressRegisterFile(clock, i, RegSel, FunSel, OutCSel, OutDSel, OutC, OutD);
+module AddressRegisterFile(I, OutCSel, OutDSel, FunSel, RegSel, Clock, OutC, OutD);
 
-    input wire clock;
-    input wire [31:0] i;
+    input wire Clock;
+    input wire [31:0] I;
     input wire [2:0] RegSel;
     input wire [1:0] FunSel;
     input wire [1:0] OutCSel;
@@ -12,33 +12,31 @@ module AddressRegisterFile(clock, i, RegSel, FunSel, OutCSel, OutDSel, OutC, Out
 
     wire [15:0] PC, SP, AR;
 
-
     Register16bit PC_reg(
-        .I(i[15:0]),
+        .I(I[15:0]),
         .E(RegSel[2]),
         .FunSel(FunSel),
-        .Clock(clock),
+        .Clock(Clock),
         .Q(PC)
-    )
+    );
 
     Register16bit SP_reg(
-        .I(i[15:0]),
+        .I(I[15:0]),
         .E(RegSel[1]),
         .FunSel(FunSel),
-        .Clock(clock),
+        .Clock(Clock),
         .Q(SP)
-    )
+    );
 
     Register16bit AR_reg(
-        .I(i[15:0]),
+        .I(I[15:0]),
         .E(RegSel[0]),
         .FunSel(FunSel),
-        .Clock(clock),
+        .Clock(Clock),
         .Q(AR)
     );
 
-
-    always @(posedge clock)
+    always @(posedge Clock)
     begin
         case (OutCSel)
             2'b00: OutC <= PC;

@@ -1,36 +1,39 @@
-module alu_system(clock, RegSel, ScrSel, FunSel3, OutASel, OutBSel, MuxDSel, FunSel5, MuxCSel, LH, write, IROut, E, FunSel2_dr, MuxASel, MuxBSel, FunSel2_arf, RegSel, OutDSel, OutCSel, WR, CS);
-    input wire clock;
+module alu_system(RF_OutASel, RF_OutBSel, RF_FunSel, RF_RegSel, RF_ScrSel, ALU_FunSel, ALU_WF, ARF_OutCSel, ARF_OutDSel, ARF_FunSel, ARF_RegSel, IR_LH, IR_Write, Mem_WR, Mem_CS, MuxASel, MuxBSel, MuxCSel, Clock, DR_FunSel, DR_E, MuxDSel);
 
-    input wire [3:0] RegSel_rf;
-    input wire [3:0] ScrSel;
-    input wire [2:0] FunSel3;
-    input wire [2:0] OutASel;
-    input wire [2:0] OutBSel;
+    
+    
+    input wire Clock;
+
+    input wire [3:0] RF_RegSel;
+    input wire [3:0] RF_ScrSel;
+    input wire [2:0] RF_FunSel;
+    input wire [2:0] RF_OutASel;
+    input wire [2:0] RF_OutBSel;
 
     input wire MuxDSel;
 
-    input wire [4:0] FunSel5;
+    input wire [4:0] ALU_FunSel;
 
     input wire [1:0] MuxCSel;
 
-    input wire LH;
-    input wire write;
-    output wire [15:0] IROut;
+    input wire IR_LH;
+    input wire IR_Write;
+    output wire [7:0] IROut;
 
-    input wire E;
-    input wire [1:0] FunSel2_dr;
+    input wire DR_E;
+    input wire [1:0] DR_FunSel;
 
     input wire [1:0] MuxASel;
 
     input wire [1:0] MuxBSel;
 
-    input wire [1:0] FunSel2_arf;
-    input wire [2:0] RegSel_arf;
-    input wire [1:0] OutDSel;
-    input wire [1:0] OutCSel;
+    input wire [1:0] ARF_FunSel;
+    input wire [2:0] ARF_RegSel;
+    input wire [1:0] ARF_OutDSel;
+    input wire [1:0] ARF_OutCSel;
 
-    input wire WR;
-    input wire CS;
+    input wire Mem_WR;
+    input wire Mem_CS;
 
     wire [31:0] w1, w2, w3, w5, w6, w12, w13;
     wire [15:0] w4, w14;
@@ -38,44 +41,44 @@ module alu_system(clock, RegSel, ScrSel, FunSel3, OutASel, OutBSel, MuxDSel, Fun
     wire [3:0] w7;
     wire w8;
 
-    register_file rf_1 (
-        .clock(clock),
-        .i(w1),
-        .RegSel(RegSel_rf),
-        .ScrSel(ScrSel),
-        .FunSel(FunSel3),
-        .OutASel(OutASel),
-        .OutBSel(OutBSel),
+    RegisterFile rf_1(
+        .I(w1),
+        .RF_OutASel(RF_OutASel),
+        .RF_OutBSel(RF_OutBSel),
+        .FunSel(RF_FunSel),
+        .RegSel(RF_RegSel),
+        .RF_ScrSel(RF_ScrSel),
+        .Clock(Clock),
         .OutA(w2),
         .OutB(w3)
     );
 
     mux_1_2 mux_D (
-        .clock(clock),
+        .Clock(Clock),
         .select(MuxDSel),
         .i0(w2),
         .i1(w4),
         .o(w5)
     );
 
-    alu alu_1 (
-        .clock(clock),
-        .input_a(w5),
-        .input_b(w3),
-        .cin(w8),
-        .FunSel(FunSel5),
-        .ALUOut(w6),  
-        .flags(w7)
+    ArithmeticLogicUnit alu_1(
+        .A(w5),
+        .B(w3),
+        .FunSel(ALU_FunSel),
+        .WF(w8),
+        .Clock(Clock),
+        .ALUOut(w6),
+        .FlagsOut(w7)
     );
 
     flag_register flag_register_1 (
-        .clock(clock),
+        .Clock(Clock),
         .flag_reg(w7),
         .carry(w8)
     );
 
     mux_2_4_2 mux_C (
-        .clock(clock),
+        .Clock(Clock),
         .select(MuxCSel),
         .i0(w6[7:0]),
         .i1(w6[15:8]),
@@ -87,57 +90,56 @@ module alu_system(clock, RegSel, ScrSel, FunSel3, OutASel, OutBSel, MuxDSel, Fun
     memory memory_1 (
         .Address(w14),
         .Data(w9),
-        .WR(WR),
-        .CS(CS), 
-        .Clock(clock),
+        .WR(Mem_WR),
+        .CS(Mem_CS), 
+        .Clock(Clock),
         .MemOut(w10)
     );
 
-    instruction_register instruction_register_1 (
-        .clock(clock),
-        .i(w10),
-        .o({IROut, w11}),  // buna bak
-        .LH(LH),
-        .write(write)
+    InstructionRegister instruction_register_1 (
+        .I(w10),
+        .IR_Write(IR_Write),
+        .IR_LH(IR_LH),
+        .Clock(Clock),
+        .IROut({IROut, w11})
     );
 
-    data_register data_register_1 (
-        .clock(clock),
-        .enable(E),
-        .FunSel(FunSel2_dr),
-        .i(w10),
-        .o(w12),
+    DataRegister data_register_1 (
+        .I(w10),
+        .E(DR_E),
+        .FunSel(DR_FunSel),
+        .Clock(Clock),
+        .DROut(w12)
     );
 
-    address_register address_register_1 (
-        clock(clock),
-        i(w13),
-        RegSel(RegSel_arf),
-        FunSel(FunSel2_arf),
-        OutCSel(OutCSel),
-        OutDSel(OutDSel),
-        OutC(w4),
-        OutD(w14)
+    AddressRegisterFile address_register_1(
+        .I(w13),
+        .ARF_OutCSel(ARF_OutCSel),
+        .ARF_OutDSel(ARF_OutDSel),
+        .FunSel(ARF_FunSel),
+        .RegSel(ARF_RegSel),
+        .Clock(Clock),
+        .OutC(w4),
+        .OutD(w14)
     );
-
     mux_2_4 mux_A (
-        clock(clock),
-        select(MuxASel),
-        i0(w6),
-        i1(w4),
-        i2(w12),
-        i3(w11),
-        o(w1)
+        .Clock(Clock),
+        .select(MuxASel),
+        .i0(w6),
+        .i1(w4),
+        .i2(w12),
+        .i3(w11),
+        .o(w1)
     );
 
     mux_2_4 mux_B (
-        clock(clock),
-        select(MuxBSel),
-        i0(w6),
-        i1(w4),
-        i2(w12),
-        i3(w11),
-        o(w13)
+        .Clock(Clock),
+        .select(MuxBSel),
+        .i0(w6),
+        .i1(w4),
+        .i2(w12),
+        .i3(w11),
+        .o(w13)
     );
 
 endmodule
