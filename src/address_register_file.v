@@ -12,29 +12,31 @@ module address_register(clock, i, RegSel, FunSel, OutCSel, OutDSel, OutC, OutD);
 
     wire [15:0] PC, SP, AR;
 
-    16_bit_register PC_reg (
-        .clock(clock),
-        .enable(RegSel[2]),
-        .funSel(FunSel),
-        .i(i[15:0]),
-        .o(PC)
+
+    Register16bit PC_reg(
+        .I(i[15:0]),
+        .E(RegSel[2]),
+        .FunSel(FunSel),
+        .Clock(clock),
+        .Q(PC)
+    )
+
+    Register16bit SP_reg(
+        .I(i[15:0]),
+        .E(RegSel[1]),
+        .FunSel(FunSel),
+        .Clock(clock),
+        .Q(SP)
+    )
+
+    Register16bit AR_reg(
+        .I(i[15:0]),
+        .E(RegSel[0]),
+        .FunSel(FunSel),
+        .Clock(clock),
+        .Q(AR)
     );
 
-    16_bit_register SP_reg (
-        .clock(clock),
-        .enable(RegSel[1]),
-        .funSel(FunSel),
-        .i(i[15:0]),
-        .o(SP)
-    );
-
-    16_bit_register AR_reg (
-        .clock(clock),
-        .enable(RegSel[0]),
-        .funSel(FunSel),
-        .i(i[15:0]),
-        .o(AR)
-    );
 
     always @(posedge clock)
     begin
