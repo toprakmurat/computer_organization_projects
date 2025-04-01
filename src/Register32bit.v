@@ -5,7 +5,7 @@ module Register32bit(I, E, FunSel, Clock, Q);
 	Input wire [2:0] FunSel;
 	Input wire [31:0] I;
 	//Qutputs, alwaysin içinde sadece reg güncellenebiliyormuş
-	reg [31:0] Q;
+	output reg [31:0] Q;
 
     always @(posedge Clock)
     begin

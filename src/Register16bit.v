@@ -6,7 +6,7 @@ module Register16bit(I, E, FunSel, Clock, Q);
 	input wire [1:0] FunSel;
 	input wire [15:0] I;
 	//outputs, alwaysin içinde sadece reg güncellenebiliyormuş
-	reg [15:0] Q;
+	output reg [15:0] Q;
 	
 	always @(posedge Clock)
 	begin
