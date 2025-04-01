@@ -1,7 +1,7 @@
-module register_file(clock, i, RegSel, ScrSel, FunSel, OutASel, OutBSel, OutA, OutB);
+module RegisterFile(I, OutASel, OutBSel, FunSel, RegSel, ScrSel, Clock, OutA, OutB);
 
-    input wire clock;
-    input wire [31:0] i;
+    input wire Clock;
+    input wire [31:0] I;
     input wire [3:0] RegSel;
     input wire [3:0] ScrSel;
     input wire [2:0] FunSel;
@@ -15,67 +15,67 @@ module register_file(clock, i, RegSel, ScrSel, FunSel, OutASel, OutBSel, OutA, O
 
 
     Register32bit R1_reg(
-        .I(i),
+        .I(I),
         .E(RegSel[3]),
-        .FunSel(funSel),
-        .Clock(clock),
+        .FunSel(FunSel),
+        .Clock(Clock),
         .Q(R1)
     );
     Register32bit R2_reg(
-        .I(i),
+        .I(I),
         .E(RegSel[2]),
-        .FunSel(funSel),
-        .Clock(clock),
+        .FunSel(FunSel),
+        .Clock(Clock),
         .Q(R2)
     );
     Register32bit R3_reg(
-        .I(i),
+        .I(I),
         .E(RegSel[1]),
-        .FunSel(funSel),
-        .Clock(clock),
+        .FunSel(FunSel),
+        .Clock(Clock),
         .Q(R3)
     );
 
     Register32bit R4_reg(
-        .I(i),
+        .I(I),
         .E(RegSel[0]),
-        .FunSel(funSel),
-        .Clock(clock),
+        .FunSel(FunSel),
+        .Clock(Clock),
         .Q(R4)
     );
 
 
     Register32bit S1_reg(
-        .I(i),
+        .I(I),
         .E(ScrSel[3]),
-        .FunSel(funSel),
-        .Clock(clock),
+        .FunSel(FunSel),
+        .Clock(Clock),
         .Q(S1)
     );
     Register32bit S2_reg(
-        .I(i),
+        .I(I),
         .E(ScrSel[2]),
-        .FunSel(funSel),
-        .Clock(clock),
+        .FunSel(FunSel),
+        .Clock(Clock),
         .Q(S2)
     );
     Register32bit S3_reg(
-        .I(i),
+        .I(I),
         .E(ScrSel[1]),
-        .FunSel(funSel),
-        .Clock(clock),
+        .FunSel(FunSel),
+        .Clock(Clock),
         .Q(S3)
     );
     Register32bit S4_reg(
-        .I(i),
+        .I(I),
         .E(ScrSel[0]),
-        .FunSel(funSel),
-        .Clock(clock),
+        .FunSel(FunSel),
+        .Clock(Clock),
         .Q(S4)
     );
 
 
-    always @(posedge clock) begin
+    always @(posedge Clock) begin
         case (OutASel)
             3'b000: OutA <= R1;
             3'b001: OutA <= R2;

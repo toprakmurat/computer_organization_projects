@@ -1,4 +1,4 @@
-module address_register(clock, i, RegSel, FunSel, OutCSel, OutDSel, OutC, OutD);
+module AddressRegisterFile(clock, i, RegSel, FunSel, OutCSel, OutDSel, OutC, OutD);
 
     input wire clock;
     input wire [31:0] i;
