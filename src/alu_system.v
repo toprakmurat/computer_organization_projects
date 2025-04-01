@@ -96,7 +96,7 @@ module alu_system(clock, RegSel, ScrSel, FunSel3, OutASel, OutBSel, MuxDSel, Fun
     instruction_register instruction_register_1 (
         .clock(clock),
         .i(w10),
-        .o({w11, IROut}),  // buna bak
+        .o({IROut, w11}),  // buna bak
         .LH(LH),
         .write(write)
     );
