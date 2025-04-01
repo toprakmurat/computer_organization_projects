@@ -21,9 +21,6 @@ module alu(
      
     reg [32:0] temp_result; // Extra bit for carry detection
     
-    reg carry_in;
-    initial carry_in = Cin;
-    
     always @(posedge clock)
     begin
         case(FunSel)
@@ -45,7 +42,7 @@ module alu(
                 flags[`OVERFLOW_FLAG] <= (~(InA[15] ^ InB[15])) & (InA[15] ^ Out[15]);
             end            
             5'b00101: begin // A + B + Cin
-                temp_result <= {1'b0, InA[15:0]} + {1'b0, InB[15:0]} + carry_in;
+                temp_result <= {1'b0, InA[15:0]} + {1'b0, InB[15:0]} + Cin;
                 Out <= {16'b0, temp_result[15:0]};
                 flags[`CARRY_FLAG] <= temp_result[16];
                 
@@ -83,11 +80,11 @@ module alu(
             end
             5'b01101: Out <= {16'b0, $signed(InA[15:0]) >>> 1}; // Arithmetic Shift Right A
             5'b01110: begin // Circular Shift Left A
-                Out <= {16'b0, InA[14:0], carry_in};
+                Out <= {16'b0, InA[14:0], Cin};
                 flags[`CARRY_FLAG] <= InA[15];
             end
             5'b01111: begin // Circular Shift Right A
-                Out <= {16'b0, carry_in, InA[15:1]};
+                Out <= {16'b0, Cin, InA[15:1]};
                 flags[`CARRY_FLAG] <= InA[0];
             end
             
@@ -109,7 +106,7 @@ module alu(
                 flags[`OVERFLOW_FLAG] <= (~(InA[31] ^ InB[31])) & (InA[31] ^ Out[31]);
             end
             5'b10101: begin // A + B + Cin
-                temp_result <= {1'b0, InA} + {1'b0, InB} + carry_in;
+                temp_result <= {1'b0, InA} + {1'b0, InB} + Cin;
                 Out <= {temp_result[31:0]};
                 flags[`CARRY_FLAG] <= temp_result[32];
                 
@@ -147,11 +144,11 @@ module alu(
             end
             5'b11101: Out <= $signed(InA) >>> 1; // Arithmetic Shift Right A
             5'b11110: begin // Circular Shift Left A
-                Out <= {InA[30:0], carry_in};
+                Out <= {InA[30:0], Cin};
                 flags[`CARRY_FLAG] <= InA[31];
             end
             5'b11111: begin // Circular Shift Right A
-                Out <= {carry_in, InA[31:1]};
+                Out <= {Cin, InA[31:1]};
                 flags[`CARRY_FLAG] <= InA[0];
             end
             
@@ -160,9 +157,7 @@ module alu(
                 flags <= flags;
             end
         endcase
-        
-        carry_in = flags[`CARRY_FLAG];
-        
+                
         flags[`ZERO_FLAG] <= (Out == 32'b0);
         
         if (FunSel[4] == 0) 

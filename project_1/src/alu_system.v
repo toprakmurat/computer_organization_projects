@@ -127,7 +127,7 @@ module alu_system(
         .ALUOut(ALUOut),
         .ARFOutC(ARFOutC),
         .DROut(DROut),
-        .IROut(IROut),
+        .IROut(IROut[7:0]),
         .Out(MuxAOut),
     );
     
@@ -137,8 +137,11 @@ module alu_system(
         .ALUOut(ALUOut),
         .ARFOutC(ARFOutC),
         .DROut(DROut),
-        .IROut(IROut),
+        .IROut(IROut[7:0]),
         .Out(MuxBOut),
     );
+    
+    always @(posedge clock)
+		IROutMSB <= IROut[15:8];
 
 endmodule
