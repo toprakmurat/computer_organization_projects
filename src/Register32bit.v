@@ -1,16 +1,16 @@
 module Register32bit(I, E, FunSel, Clock, Q);
 	//Inputs
-	Input wire Clock;
-	Input wire E;
-	Input wire [2:0] FunSel;
-	Input wire [31:0] I;
+	input wire Clock;
+	input wire E;
+	input wire [2:0] FunSel;
+	input wire [31:0] I;
 	//Qutputs, alwaysin içinde sadece reg güncellenebiliyormuş
 	output reg [31:0] Q;
 
     always @(posedge Clock)
     begin
 
-        If(E)
+        if(E)
         begin
             case(FunSel)
             //Decrement
