@@ -1,62 +1,72 @@
 `timescale 1ns / 1ps
 
-module MUX_AB(
-    input wire Clock,
-    input wire [1:0]  MuxSel,
-    input wire [31:0] ALUOut,
-    input wire [15:0] ARFOutC,
-    input wire [31:0] DROut,
-    input wire [7:0]  IROut,
-    output reg [31:0] Out
-);
+/*
+    Module Authors: Murat Toprak & Vedat Enis Gül
+    Implementation of the final Arithmetic Logic Unit System
+    
+    MUX modules select one of many input signals and forward
+    the selected input to a single output
+    
+    Maximum line length is 63 characters
+*/
 
+module MUX_AB(
+    input wire          Clock,
+    input wire [1:0]    MuxSel,
+    input wire [31:0]   ALUOut,
+    input wire [15:0]   ARFOutC,
+    input wire [31:0]   DROut,
+    input wire [7:0]    IROut,
+    output reg [31:0]   Out
+);
+    /* Combinatorial Select Logic */
     always @(*)
     begin
         case(MuxSel)
-            2'b00:  Out <= ALUOut;
-            2'b01:  Out <= {{16{ARFOutC[15]}}, ARFOutC};
-            2'b10:  Out <= DROut;
-            2'b11:  Out <= {{24{IROut[7]}}, IROut};
+            2'b00:      Out = ALUOut;
+            2'b01:      Out = {{16{ARFOutC[15]}}, ARFOutC};
+            2'b10:      Out = DROut;
+            2'b11:      Out = {{24{IROut[7]}}, IROut};
             
-            default: Out <= Out;
+            default:    Out = Out;
         endcase
     end
 endmodule
 
 module MUX_C(
-    input wire Clock,
-    input wire [1:0] MuxSel,
-    input wire [7:0] ALUOut1,
-    input wire [7:0] ALUOut2,
-    input wire [7:0] ALUOut3,
-    input wire [7:0] ALUOut4,
-    output reg [7:0] Out
+    input wire          Clock,
+    input wire [1:0]    MuxSel,
+    input wire [7:0]    ALUOut1,
+    input wire [7:0]    ALUOut2,
+    input wire [7:0]    ALUOut3,
+    input wire [7:0]    ALUOut4,
+    output reg [7:0]    Out
 );
-
+    /* Combinatorial Select Logic */
     always @(*)
     begin
         case(MuxSel)
-            2'b00:  Out <= ALUOut1;
-            2'b01:  Out <= ALUOut2;
-            2'b10:  Out <= ALUOut3;
-            2'b11:  Out <= ALUOut4;
+            2'b00:      Out = ALUOut1;
+            2'b01:      Out = ALUOut2;
+            2'b10:      Out = ALUOut3;
+            2'b11:      Out = ALUOut4;
             
-            default: Out <= Out;
+            default:    Out = Out;
         endcase
     end
 
 endmodule
 
 module MUX_D(
-    input wire Clock,
-    input wire MuxSel,
-    input wire [31:0] RFOutA,
-    input wire [15:0] ARFOutC,
-    output reg [31:0] Out
+    input wire          Clock,
+    input wire          MuxSel,
+    input wire [31:0]   RFOutA,
+    input wire [15:0]   ARFOutC,
+    output reg [31:0]   Out
 );
-    
+    /* Combinatorial Select Logic */
     always @(*)
-        Out <= (MuxSel) ? {{16{ARFOutC[15]}}, ARFOutC} : RFOutA;
+        Out = (MuxSel) ? {{16{ARFOutC[15]}}, ARFOutC} : RFOutA;
     
 endmodule
 
@@ -87,16 +97,13 @@ module ArithmeticLogicUnitSystem (
     input wire [1:0] DR_FunSel,
     input wire       DR_E,
     input wire       MuxDSel
-
-    // output reg [7:0] IROutMSB
 );
-    
-    wire [31:0] RFOutA, RFOutB, ALUOut, DROut;
+  
+	wire [31:0] OutA, OutB, ALUOut, DROut;
     wire [31:0] MuxAOut, MuxBOut, MuxDOut;
-    wire [15:0] IROut, ARFOutC, ARFOutD;
+    wire [15:0] IROut, OutC, Address;
     wire [7:0]  MuxCOut, MemOut;
-    wire [3:0]  FlagOut;
-    wire        FRCarryOut;
+    wire [3:0]  FlagsOut;
     
     RegisterFile RF (
         .I(MuxAOut),
@@ -106,30 +113,28 @@ module ArithmeticLogicUnitSystem (
         .RegSel(RF_RegSel),
         .ScrSel(RF_ScrSel),
         .Clock(Clock),
-        .OutA(RFOutA),
-        .OutB(RFOutB)
+        .OutA(OutA),
+        .OutB(OutB)
     );
     
-    // TODO
     MUX_D muxD (
         .Clock(Clock),
         .MuxSel(MuxDSel),
-        .RFOutA(RFOutA),
-        .ARFOutC(ARFOutC),
+        .RFOutA(OutA),
+        .ARFOutC(OutC),
         .Out(MuxDOut)
     );
     
     ArithmeticLogicUnit ALU (
         .A(MuxDOut),
-        .B(RFOutB),
+        .B(OutB),
         .FunSel(ALU_FunSel),
-        .WF(WF),
+        .WF(ALU_WF),
         .Clock(Clock),
         .ALUOut(ALUOut),
-        .FlagsOut(FlagOut)
+        .FlagsOut(FlagsOut)
     );
     
-    // TODO
     MUX_C muxC (
         .Clock(Clock),
         .MuxSel(MuxCSel),
@@ -141,7 +146,7 @@ module ArithmeticLogicUnitSystem (
     );
     
     Memory MEM (
-        .Address(ARFOutD),
+        .Address(Address),
         .Data(MuxCOut),
         .WR(Mem_WR),
         .CS(Mem_CS),
@@ -172,33 +177,28 @@ module ArithmeticLogicUnitSystem (
         .FunSel(ARF_FunSel),
         .RegSel(ARF_RegSel),
         .Clock(Clock),
-        .OutC(ARFOutC),
-        .OutD(ARFOutD)
+        .OutC(OutC),
+        .OutD(Address)
     );
     
-    // TODO
     MUX_AB muxA (
         .Clock(Clock),
         .MuxSel(MuxASel),
         .ALUOut(ALUOut),
-        .ARFOutC(ARFOutC),
+        .ARFOutC(OutC),
         .DROut(DROut),
         .IROut(IROut[7:0]),
         .Out(MuxAOut)
     );
     
-    // TODO
     MUX_AB muxB (
         .Clock(Clock),
         .MuxSel(MuxBSel),
         .ALUOut(ALUOut),
-        .ARFOutC(ARFOutC),
+        .ARFOutC(OutC),
         .DROut(DROut),
         .IROut(IROut[7:0]),
         .Out(MuxBOut)
     );
-    
-    // always @(posedge Clock)
-	//   IROutMSB <= IROut[15:8];
 
 endmodule

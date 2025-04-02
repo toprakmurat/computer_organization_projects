@@ -1,11 +1,18 @@
 `timescale 1ns / 1ps
 
+/*
+    Module Authors: Murat Toprak & Vedat Enis Gül
+    Implementation of a 32-bit Register
+    
+    Maximum line length is 56 characters
+*/
+
 module Register32bit (I, E, FunSel, Clock, Q);
-    input wire [31:0] I;
-    input wire E;
-    input wire [2:0] FunSel;
-    input wire Clock;
-    output reg [31:0] Q;
+    input wire [31:0]   I;
+    input wire          E;
+    input wire [2:0]    FunSel;
+    input wire          Clock;
+    output reg [31:0]   Q;
     
     always @(posedge Clock)
     begin
