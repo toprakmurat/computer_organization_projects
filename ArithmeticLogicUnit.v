@@ -102,7 +102,7 @@ module ArithmeticLogicUnit(
 		endcase
         
     end
-
+   // Flagları güncelleme
     always @(posedge Clock) begin
 	
 	if (!WF)
