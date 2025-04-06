@@ -121,8 +121,8 @@ module ArithmeticLogicUnitSystem(RF_OutASel, RF_OutBSel, RF_FunSel, RF_RegSel, R
     input wire Mem_WR;
     input wire Mem_CS;
 
-    wire [31:0] MuxAOut, RFOutA, RFOutB, MuxDOut, ALUOut, DROut, MuxBOut;
-    wire [15:0] ARFOutC, ARFOutD;
+    wire [31:0] MuxAOut, OutA, OutB, MuxDOut, ALUOut, DROut, MuxBOut;
+    wire [15:0] OutC, Address;
     wire [7:0]  MuxCOut, MemOut, IROut;
     wire [3:0] FlagsOut;
     wire FlagCarryOut;
@@ -135,20 +135,20 @@ module ArithmeticLogicUnitSystem(RF_OutASel, RF_OutBSel, RF_FunSel, RF_RegSel, R
         .RegSel(RF_RegSel),
         .ScrSel(RF_ScrSel),
         .Clock(Clock),
-        .OutA(RFOutA),
-        .OutB(RFOutB)
+        .OutA(OutA),
+        .OutB(OutB)
     );
 
     mux_1_2 mux_D (
         .select(MuxDSel),
-        .i0(RFOutA),
-        .i1(ARFOutC),
+        .i0(OutA),
+        .i1(OutC),
         .o(MuxDOut)
     );
 
     ArithmeticLogicUnit ALU(
         .A(MuxDOut),
-        .B(RFOutB),
+        .B(OutB),
         .FunSel(ALU_FunSel),
         .WF(ALU_WF),
         .Clock(Clock),
@@ -172,7 +172,7 @@ module ArithmeticLogicUnitSystem(RF_OutASel, RF_OutBSel, RF_FunSel, RF_RegSel, R
     );
 
     Memory MEM(
-        .Address(ARFOutD),
+        .Address(Address),
         .Data(MuxCOut),
         .WR(Mem_WR),
         .CS(Mem_CS), 
@@ -203,13 +203,13 @@ module ArithmeticLogicUnitSystem(RF_OutASel, RF_OutBSel, RF_FunSel, RF_RegSel, R
         .FunSel(ARF_FunSel),
         .RegSel(ARF_RegSel),
         .Clock(Clock),
-        .OutC(ARFOutC),
-        .OutD(ARFOutD)
+        .OutC(OutC),
+        .OutD(Address)
     );
     mux_2_4 mux_A (
         .select(MuxASel),
         .i0(ALUOut),
-        .i1(ARFOutC),
+        .i1(OutC),
         .i2(DROut),
         .i3(IROut[7:0]),
         .o(MuxAOut)
@@ -218,7 +218,7 @@ module ArithmeticLogicUnitSystem(RF_OutASel, RF_OutBSel, RF_FunSel, RF_RegSel, R
     mux_2_4 mux_B (
         .select(MuxBSel),
         .i0(ALUOut),
-        .i1(ARFOutC),
+        .i1(OutC),
         .i2(DROut),
         .i3(IROut[7:0]),
         .o(MuxBOut)
