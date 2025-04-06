@@ -30,10 +30,6 @@ module ArithmeticLogicUnit(
 
     // ALU işlemleri (hesaplamalar)
     always @(*) begin
-        if (!WF)
-            ALUOut = ALUOut;
-        else
-		begin
 		case (FunSel)
 		//16-bit operations, using the last 16 bits of A and B
 		// Directly assign A or B
@@ -104,12 +100,15 @@ module ArithmeticLogicUnit(
 		ALUOut <= ALUOut;
 		 end
 		endcase
-        end
         
     end
 
     always @(posedge Clock) begin
-
+	
+	if (!WF)
+            ALUOut = ALUOut;
+        else
+	begin
         // Zero flag
         FlagsOut[3] <= (ALUOut == 32'b0) ? 1'b1 : 1'b0;
 
@@ -147,7 +146,7 @@ module ArithmeticLogicUnit(
         else 
             FlagsOut[0] <= 1'b0;
 
-
+	end
     end
 
 endmodule 
