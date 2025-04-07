@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 /*
-    Module Authors: Murat Toprak & Vedat Enis Gül
+    Module Authors: Murat Toprak & Vedat Enis GÃ¼l
 
     Implementation of the Arithmetic Logic Unit
 
@@ -141,7 +141,7 @@ module ArithmeticLogicUnit (
     always @(posedge Clock) 
     begin
         if (!WF)
-            ALUOut = ALUOut;
+            FlagsOut <= FlagsOut;
         else
         begin
         /* Update ZERO and NEGATIVE flags in every clock cycle */
