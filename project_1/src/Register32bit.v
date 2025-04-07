@@ -2,9 +2,8 @@
 
 /*
     Module Authors: Murat Toprak & Vedat Enis Gül
+
     Implementation of a 32-bit Register
-    
-    Maximum line length is 56 characters
 */
 
 module Register32bit (I, E, FunSel, Clock, Q);
@@ -13,7 +12,7 @@ module Register32bit (I, E, FunSel, Clock, Q);
     input wire [2:0]    FunSel;
     input wire          Clock;
     output reg [31:0]   Q;
-    
+
     always @(posedge Clock)
     begin
         if (E)
@@ -27,7 +26,7 @@ module Register32bit (I, E, FunSel, Clock, Q);
                 3'b101:     Q <= {16'b0, I[15:0]};
                 3'b110:     Q <= {Q[23:0], I[7:0]};
                 3'b111:     Q <= {{16{I[15]}}, I[15:0]};
-                
+
                 default:    Q <= Q;
             endcase
         end

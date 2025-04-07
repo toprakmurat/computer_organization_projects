@@ -2,9 +2,8 @@
 
 /*
     Module Authors: Murat Toprak & Vedat Enis Gül
+
     Implementation of the Address Register File
-    
-    Maximum line length is 49 characters
 */
 
 module AddressRegisterFile (
@@ -18,7 +17,7 @@ module AddressRegisterFile (
 	output reg [15:0]  OutD
 );
 	wire [15:0] reg_PC, reg_SP, reg_AR;
-	
+
 	Register16bit AR (
 		.I(I),
 		.E(RegSel[0]),
@@ -34,7 +33,7 @@ module AddressRegisterFile (
 		.Clock(Clock),
 		.Q(reg_SP)
 	);
-	
+
 	Register16bit PC (
 		.I(I),
 		.E(RegSel[2]),
@@ -42,7 +41,7 @@ module AddressRegisterFile (
 		.Clock(Clock),
 		.Q(reg_PC)
 	);
-	
+
 	always @(*)
 	begin
 		case(OutCSel)
@@ -50,16 +49,16 @@ module AddressRegisterFile (
 			2'b01:       OutC = reg_SP;
 			2'b10:       OutC = reg_AR;
 			2'b11:       OutC = reg_AR;
-			
+
 			default:     OutC = OutC;
 		endcase
-		
+
 		case(OutDSel)
 			2'b00:       OutD = reg_PC;
 			2'b01:       OutD = reg_SP;
 			2'b10:       OutD = reg_AR;
 			2'b11:       OutD = reg_AR;
-			
+
 			default:     OutD = OutD;
 		endcase
 	end

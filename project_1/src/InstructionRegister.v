@@ -2,9 +2,8 @@
 
 /*
     Module Authors: Murat Toprak & Vedat Enis Gül
+
     Implementation of the Instruction Register
-    
-    Maximum line length is 73 characters
 */
 
 module InstructionRegister(I, Write, LH, Clock, IROut);
@@ -13,8 +12,7 @@ module InstructionRegister(I, Write, LH, Clock, IROut);
     input wire          LH;
     input wire          Clock;
     output reg [15:0]   IROut;
-    
-    
+
     always @(posedge Clock)
     begin
         if (Write)

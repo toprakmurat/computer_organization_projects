@@ -2,9 +2,8 @@
 
 /*
     Module Authors: Murat Toprak & Vedat Enis Gül
+
     Implementation of a 16-bit Register
-    
-    Maximum line length is 50 characters
 */
 
 module Register16bit (I, E, FunSel, Clock, Q);
@@ -13,7 +12,7 @@ module Register16bit (I, E, FunSel, Clock, Q);
     input wire [1:0]    FunSel;
     input wire          Clock;
     output reg [15:0]   Q;
-    
+
     always @(posedge Clock)
     begin
         if (E)
@@ -23,7 +22,7 @@ module Register16bit (I, E, FunSel, Clock, Q);
                 2'b01:      Q <= Q + 1;
                 2'b10:      Q <= I;
                 2'b11:      Q <= 16'b0;
-                
+
                 default:    Q <= Q;
             endcase
         end

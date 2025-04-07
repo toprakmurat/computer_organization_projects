@@ -2,9 +2,8 @@
 
 /*
     Module Authors: Murat Toprak & Vedat Enis Gül
-    Implementation of the Data Register
-    
-    Maximum line length is 59 characters
+
+    Implementation of the Data Register    
 */
 
 module DataRegister(I, E, FunSel, Clock, DROut);
@@ -13,7 +12,7 @@ module DataRegister(I, E, FunSel, Clock, DROut);
     input wire [1:0]    FunSel;
     input wire          Clock;
     output reg [31:0]   DROut;
-    
+
     always @(posedge Clock)
     begin
         if (E)
@@ -23,7 +22,7 @@ module DataRegister(I, E, FunSel, Clock, DROut);
                 2'b01:      DROut <= {24'b0, I[7:0]};
                 2'b10:      DROut <= {DROut[23:0], I[7:0]};
                 2'b11:      DROut <= {I[7:0], DROut[31:8]};
-                
+
                 default:    DROut <= DROut;
             endcase
         end

@@ -2,9 +2,8 @@
 
 /*
     Module Authors: Murat Toprak & Vedat Enis Gül
+
     Implementation of the Register File
-    
-    Maximum line length is 49 characters
 */
 
 module RegisterFile (
@@ -20,7 +19,7 @@ module RegisterFile (
 );
 	wire [31:0] reg_R1, reg_R2, reg_R3, reg_R4;
 	wire [31:0] reg_S1, reg_S2, reg_S3, reg_S4;
-	
+
 	Register32bit R1 (
 		.I(I),
 		.E(RegSel[3]),
@@ -28,7 +27,7 @@ module RegisterFile (
 		.Clock(Clock),
 		.Q(reg_R1)
 	);
-	
+
 	Register32bit R2 (
 		.I(I),
 		.E(RegSel[2]),
@@ -36,7 +35,7 @@ module RegisterFile (
 		.Clock(Clock),
 		.Q(reg_R2)
 	);
-	
+
 	Register32bit R3 (
 		.I(I),
 		.E(RegSel[1]),
@@ -44,7 +43,7 @@ module RegisterFile (
 		.Clock(Clock),
 		.Q(reg_R3)
 	);
-	
+
 	Register32bit R4 (
 		.I(I),
 		.E(RegSel[0]),
@@ -52,7 +51,7 @@ module RegisterFile (
 		.Clock(Clock),
 		.Q(reg_R4)
 	);
-	
+
 	Register32bit S1 (
 		.I(I),
 		.E(ScrSel[3]),
@@ -60,7 +59,7 @@ module RegisterFile (
 		.Clock(Clock),
 		.Q(reg_S1)
 	);
-	
+
 	Register32bit S2 (
 		.I(I),
 		.E(ScrSel[2]),
@@ -68,7 +67,7 @@ module RegisterFile (
 		.Clock(Clock),
 		.Q(reg_S2)
 	);
-	
+
 	Register32bit S3 (
 		.I(I),
 		.E(ScrSel[1]),
@@ -76,7 +75,7 @@ module RegisterFile (
 		.Clock(Clock),
 		.Q(reg_S3)
 	);
-	
+
 	Register32bit S4 (
 		.I(I),
 		.E(ScrSel[0]),
@@ -84,7 +83,7 @@ module RegisterFile (
 		.Clock(Clock),
 		.Q(reg_S4)
 	);
-	
+
 	always @(*)
 	begin
         case (OutASel)
@@ -111,5 +110,4 @@ module RegisterFile (
             default:    OutB = 32'b0;
         endcase	
 	end
-	
 endmodule
