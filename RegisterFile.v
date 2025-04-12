@@ -78,27 +78,27 @@ module RegisterFile(I, OutASel, OutBSel, FunSel, RegSel, ScrSel, Clock, OutA, Ou
 
     always @(*) begin
         case (OutASel)
-            3'b000: OutA <= R1_reg;
-            3'b001: OutA <= R2_reg;
-            3'b010: OutA <= R3_reg;
-            3'b011: OutA <= R4_reg;
-            3'b100: OutA <= S1_reg;
-            3'b101: OutA <= S2_reg;
-            3'b110: OutA <= S3_reg;
-            3'b111: OutA <= S4_reg;
-            default: OutA <= 32'b0;
+            3'b000: OutA = R1_reg;
+            3'b001: OutA = R2_reg;
+            3'b010: OutA = R3_reg;
+            3'b011: OutA = R4_reg;
+            3'b100: OutA = S1_reg;
+            3'b101: OutA = S2_reg;
+            3'b110: OutA = S3_reg;
+            3'b111: OutA = S4_reg;
+            default: OutA = 32'b0;
         endcase
 
         case (OutBSel)
-            3'b000: OutB <= R1_reg;
-            3'b001: OutB <= R2_reg;
-            3'b010: OutB <= R3_reg;
-            3'b011: OutB <= R4_reg;
-            3'b100: OutB <= S1_reg;
-            3'b101: OutB <= S2_reg;
-            3'b110: OutB <= S3_reg;
-            3'b111: OutB <= S4_reg;
-            default: OutB <= 32'b0;
+            3'b000: OutB = R1_reg;
+            3'b001: OutB = R2_reg;
+            3'b010: OutB = R3_reg;
+            3'b011: OutB = R4_reg;
+            3'b100: OutB = S1_reg;
+            3'b101: OutB = S2_reg;
+            3'b110: OutB = S3_reg;
+            3'b111: OutB = S4_reg;
+            default: OutB = 32'b0;
         endcase
     end
 
