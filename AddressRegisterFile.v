@@ -40,19 +40,19 @@ module AddressRegisterFile(I, OutCSel, OutDSel, FunSel, RegSel, Clock, OutC, Out
     always @(*)
     begin
         case (OutCSel)
-            2'b00: OutC <= PC_reg;
-            2'b01: OutC <= SP_reg;
-            2'b10: OutC <= AR_reg;
-            2'b11: OutC <= AR_reg;
-            default: OutC <= OutC;
+            2'b00: OutC = PC_reg;
+            2'b01: OutC = SP_reg;
+            2'b10: OutC = AR_reg;
+            2'b11: OutC = AR_reg;
+            default: OutC = OutC;
         endcase
 
         case (OutDSel)
-            2'b00: OutD <= PC_reg;
-            2'b01: OutD <= SP_reg;
-            2'b10: OutD <= AR_reg;
-            2'b11: OutD <= AR_reg;
-            default: OutD <= OutD;
+            2'b00: OutD = PC_reg;
+            2'b01: OutD = SP_reg;
+            2'b10: OutD = AR_reg;
+            2'b11: OutD = AR_reg;
+            default: OutD = OutD;
         endcase
     end
 
