@@ -9,9 +9,9 @@ module mux_1_2 (select, i0, i1, o);
     always @(*)
     begin
         if(select)
-            o <= {{16{i1[15]}}, i1};
+            o = {{16{i1[15]}}, i1};
         else
-            o <= i0;
+            o = i0;
     end
 endmodule
 
@@ -26,11 +26,11 @@ module mux_2_4 (select, i0, i1, i2, i3, o);
     always @(*)
     begin
         case (select)
-            2'b00: o <= i0;
-            2'b01: o <= {{16{i1[15]}}, i1};
-            2'b10: o <= i2;
-            2'b11: o <= {{24{i3[7]}}, i3};
-            default: o <= o;
+            2'b00: o = i0;
+            2'b01: o = {{16{i1[15]}}, i1};
+            2'b10: o = i2;
+            2'b11: o = {{24{i3[7]}}, i3};
+            default: o = o;
         endcase
     end
 
@@ -48,41 +48,17 @@ module mux_2_4_2 (select, i0, i1, i2, i3, o);
     always @(*)
     begin
         case (select)
-            2'b00: o <= i0;
-            2'b01: o <= i1;
-            2'b10: o <= i2;
-            2'b11: o <= i3;
-            default: o <= o;
+            2'b00: o = i0;
+            2'b01: o = i1;
+            2'b10: o = i2;
+            2'b11: o = i3;
+            default: o = o;
         endcase
     end
 
 
 endmodule
 
-module flag_register(clock, flag_reg, carry);
-    input wire clock;
-
-    wire Z;  
-    wire C;  
-    wire N;  
-    wire O;  
-
-    output reg [3:0] flag_reg;  
-
-    assign Z = flag_reg[3];
-    assign C = flag_reg[2];
-    assign N = flag_reg[1];
-    assign O = flag_reg[0];
-
-    output reg carry; 
-
-    always @(posedge clock) begin
-        carry <= C;
-    end
-
- 
-
-endmodule
 
 module ArithmeticLogicUnitSystem(RF_OutASel, RF_OutBSel, RF_FunSel, RF_RegSel, RF_ScrSel, ALU_FunSel, ALU_WF, ARF_OutCSel, ARF_OutDSel, ARF_FunSel, ARF_RegSel, IR_LH, IR_Write, Mem_WR, Mem_CS, MuxASel, MuxBSel, MuxCSel, Clock, DR_FunSel, DR_E, MuxDSel);
 
@@ -156,11 +132,6 @@ module ArithmeticLogicUnitSystem(RF_OutASel, RF_OutBSel, RF_FunSel, RF_RegSel, R
         .FlagsOut(FlagsOut)
     );
 
-    flag_register flag_register_1 (
-        .clock(Clock),
-        .flag_reg(FlagsOut),
-        .carry(FlagCarryOut)
-    );
 
     mux_2_4_2 mux_C (
         .select(MuxCSel),
