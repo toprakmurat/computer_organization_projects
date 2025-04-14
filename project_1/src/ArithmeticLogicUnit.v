@@ -105,7 +105,7 @@ module ArithmeticLogicUnit (
             end
             5'b10110: // A - B 
             begin
-                temp_result = {1'b0, A} - {1'b0, B};
+                temp_result = {1'b0, A} + {1'b0, B_comp_32};
                 ALUOut = temp_result[31:0];
             end
 

@@ -19,7 +19,7 @@ module AddressRegisterFile (
 	wire [15:0] reg_PC, reg_SP, reg_AR;
 
 	Register16bit AR (
-		.I(I),
+		.I(I[15:0]),
 		.E(RegSel[0]),
 		.FunSel(FunSel),
 		.Clock(Clock),
@@ -27,7 +27,7 @@ module AddressRegisterFile (
 	);
 
 	Register16bit SP (
-		.I(I),
+		.I(I[15:0]),
 		.E(RegSel[1]),
 		.FunSel(FunSel),
 		.Clock(Clock),
@@ -35,7 +35,7 @@ module AddressRegisterFile (
 	);
 
 	Register16bit PC (
-		.I(I),
+		.I(I[15:0]),
 		.E(RegSel[2]),
 		.FunSel(FunSel),
 		.Clock(Clock),

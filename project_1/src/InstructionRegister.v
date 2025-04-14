@@ -16,7 +16,7 @@ module InstructionRegister(I, Write, LH, Clock, IROut);
     always @(posedge Clock)
     begin
         if (Write)
-            IROut <= (LH) ? {I[7:0], IROut[7:0]} : {IROut[15:8], I[7:0]};
+            IROut <= (LH) ? {I, IROut[7:0]} : {IROut[15:8], I};
         else
             IROut <= IROut;
     end
