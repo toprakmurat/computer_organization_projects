@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 /*
-    Module Authors: Murat Toprak & Vedat Enis Gül
+    Module Authors: Murat Toprak & Vedat Enis GÃ¼l
 
     Implementation of the final Arithmetic Logic Unit System
 
@@ -132,7 +132,7 @@ module ArithmeticLogicUnitSystem (
         .MuxSel(MuxCSel),
         .ALUOut1(ALUOut[7:0]),
         .ALUOut2(ALUOut[15:8]),
-        .ALUOut3(ALUOut[23:15]),
+        .ALUOut3(ALUOut[23:16]),
         .ALUOut4(ALUOut[31:24]),
         .Out(MuxCOut)
     );
