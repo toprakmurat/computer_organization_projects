@@ -36,7 +36,15 @@ module ArithmeticLogicUnit (
     begin
         case(FunSel)
             /* ---- 16-BIT OPERATIONS ---- */
-
+			
+			/*
+			 * Depending on the function applied, `temp_result` buffer 
+			 * is used to update the flag register later.
+			 *
+			 * All operations extend the 16 bits (MSB) of ALUOut with 0, 
+			 * as we are dealing with only 16-bit inputs
+			 */
+			 
             /* Choose A, B, ANOT, BNOT */
             5'b00000:   ALUOut = {16'b0, A[15:0]};
             5'b00001:   ALUOut = {16'b0, B[15:0]};
@@ -44,6 +52,7 @@ module ArithmeticLogicUnit (
             5'b00011:   ALUOut = {16'b0, ~B[15:0]};
 
             /* Arithmetic operations */
+			
             5'b00100: // A + B 
             begin
                 temp_result = {1'b0, A[15:0]} + {1'b0, B[15:0]};
@@ -85,6 +94,11 @@ module ArithmeticLogicUnit (
                 ALUOut = {16'b0, FlagsOut[`CARRY_FLAG], A[15:1]};
 
             /* ---- 32-BIT OPERATIONS ---- */
+			
+			/*
+			 * Depending on the function applied, `temp_result` buffer 
+			 * is used to update the flag register later.
+			 */
 
             /* Choose A, B, ANOT, BNOT */
             5'b10000:   ALUOut = A;
@@ -144,19 +158,71 @@ module ArithmeticLogicUnit (
             FlagsOut <= FlagsOut;
         else
         begin
+		
+		/* 
+		 * - ZERO_FLAG: Set to 1 if all bits of ALUOut is zero; otherwise, set to 0.
+		 * - NEGATIVE_FLAG: Set to 1 if the most significant bit (MSB) of ALUOut is 1 
+		 *   - For 16-bit operations, the MSB is ALUOut[15].
+		 *   - For 32-bit operations, the MSB is ALUOut[31].
+		 * - CARRY_FLAG: Updated based on the operation specified by FunSel.
+		 * - OVERFLOW_FLAG: Updated for addition and subtraction to indicate overflow.
+		 * 
+		 * The `temp_result` buffer is used for carry and overflow calculations.
+		 * The flags do not change if WF is low.
+		 */
+		 
+		/*
+         * Carry Detection Logic
+		 * 
+		 * Arithmetic Operations:
+		 * - For addition, a carry is detected if there is an overflow
+		 * from the most significant bit (MSB) of the result.
+		 *   - For 16-bit operations: `temp_result[16]` indicates a carry.
+		 *   - For 32-bit operations: `temp_result[32]` indicates a carry.
+		 *
+		 * - For subtraction, a carry is detected when borrowing occurs, 
+		 * which is represented using the two's complement addition logic.
+		 * 
+		 * Shift Operations:
+		 * - For logical and circular shift left, carry flag gets the MSB of input.
+		 * - For logical and circular shift right, carry flag gets the LSB of input.
+		 * - For arithmetic shifts, carry flag updates are not necessary.
+		 */
+		 
+		/*
+         * Overflow Detection Logic (For 32-bit inputs)
+		 * Note: The one and only difference for 16-bit inputs is,
+		 * `ALUOut` indexes become 15 instead of 31.
+		 *
+		 * Case 5'b10100 (A + B) and 5'b10101 (A + B + Cin) overflow detection:
+		 * - Overflow occurs if the sign bits of A and B are the same (A[31] == B[31]),
+		 *   but the sign bit of the result (ALUOut[31]) differs from A and B.
+		 * - The condition is expressed as:
+		 *   (~(A[31] ^ B[31])) & (A[31] ^ ALUOut[31])
+		 *   - `~(A[31] ^ B[31])`: A and B have the same sign.
+		 *   - `(A[31] ^ ALUOut[31])`: the result has a different sign.
+		 *
+		 * Case 5'b10110 (A - B) overflow detection:
+		 * - Overflow occurs if the sign bits of A and B differ (A[31] != B[31]),
+		 *   but the sign bit of the result (ALUOut[31]) differs from A.
+		 * - The condition is expressed as:
+		 *   (A[31] ^ B[31]) & (A[31] ^ ALUOut[31])
+		 *   - `(A[31] ^ B[31])`: A and B have different signs.
+		 *   - `(A[31] ^ ALUOut[31])`: the result has a different sign from A.
+         */
+		
         /* Update ZERO and NEGATIVE flags in every clock cycle */
         FlagsOut[`ZERO_FLAG] <= (ALUOut == 32'b0);
         if (FunSel[4] == 0) 
             FlagsOut[`NEGATIVE_FLAG] <= (ALUOut[15] == 1);
         else
             FlagsOut[`NEGATIVE_FLAG] <= (ALUOut[31] == 1);
-
-        /* CARRY and OVERFLOW flag is updated based on FunSel */
-        /* temp_result buffer is utilized for these flag updates */    
+ 
         case (FunSel)
             5'b00100, 5'b00101, 5'b00110, 5'b01011:
             begin
                 FlagsOut[`CARRY_FLAG] <= temp_result[16];
+
                 if (FunSel == 5'b00100 || FunSel == 5'b00101)
                     FlagsOut[`OVERFLOW_FLAG] <= (~(A[15] ^ B[15])) & (A[15] ^ ALUOut[15]);
                 else if (FunSel == 5'b00110)
@@ -172,6 +238,7 @@ module ArithmeticLogicUnit (
             5'b10100, 5'b10101, 5'b10110, 5'b11011:
             begin
                 FlagsOut[`CARRY_FLAG] <= temp_result[32];
+				
                 if (FunSel == 5'b10100 || FunSel == 5'b10101)
                     FlagsOut[`OVERFLOW_FLAG] <= (~(A[31] ^ B[31])) & (A[31] ^ ALUOut[31]);
                 else if (FunSel == 5'b10110)
