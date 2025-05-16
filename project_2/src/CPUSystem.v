@@ -203,6 +203,15 @@ module CPUSystem(
             // ========================
             T3: begin
 				case(Opcode)
+                    LDAH: begin
+                        /* Load from Memory to DR, then from DR to Rx */
+                        
+                        /* Load AR from IROut[7:0] */
+                        MuxBSel = 2'b11; // Select IROut[7:0]
+                        ARF_FunSel = 2'b10;
+                        ARF_RegSel = 3'b001; // only to AR
+                    end
+                    
                     STA: begin
                         /* Load AR from IROut[7:0] */
                         MuxBSel = 2'b11; // Select IROut[7:0]
@@ -275,6 +284,23 @@ module CPUSystem(
             
             T4: begin
 				case(Opcode)
+                    LDAH: begin
+                        /* Load from Memory to DR, then from DR to Rx */
+                        
+                        /* Enable memory for read operation */
+                        ARF_OutDSel = 2'10; // Address = AR
+                        Mem_CS = 0;
+                        Mem_WR = 0;
+                        
+                        /* Load to DR */
+                        DR_E = 1;
+                        DR_FunSel = 2'b01; // DR = 0x000000II
+                        
+                        /* Increment Address for the next byte read */
+                        ARF_RegSel = 3'b001; // Only enable AR
+                        ARF_FunSel = 2'b01; // Increment
+                    end
+                    
                     STA: begin
                         /* Enable memory for write operation */
                         ARF_OutDSel = 2'b10; // Address = AR
@@ -335,6 +361,23 @@ module CPUSystem(
             
             T5: begin
 				case(Opcode)
+                    LDAH: begin
+                        /* Load from Memory to DR, then from DR to Rx */
+                        
+                        /* Enable memory for read operation */
+                        ARF_OutDSel = 2'10; // Address = AR
+                        Mem_CS = 0;
+                        Mem_WR = 0;
+                        
+                        /* Load to DR */
+                        DR_E = 1;
+                        DR_FunSel = 2'b10; // DR = 0x0000xxII
+                        
+                        /* Increment Address for the next byte read */
+                        ARF_RegSel = 3'b001; // Only enable AR
+                        ARF_FunSel = 2'b01; // Increment
+                    end
+                    
                     STA: begin
                         /* Enable memory for write operation */
                         ARF_OutDSel = 2'b10; // Address = AR
@@ -381,6 +424,23 @@ module CPUSystem(
             
             T6: begin
 				case(Opcode)
+                    LDAH: begin
+                        /* Load from Memory to DR, then from DR to Rx */
+                        
+                        /* Enable memory for read operation */
+                        ARF_OutDSel = 2'10; // Address = AR
+                        Mem_CS = 0;
+                        Mem_WR = 0;
+                        
+                        /* Load to DR */
+                        DR_E = 1;
+                        DR_FunSel = 2'b10; // DR = 0x00xxxxII
+                        
+                        /* Increment Address for the next byte read */
+                        ARF_RegSel = 3'b001; // Only enable AR
+                        ARF_FunSel = 2'b01; // Increment
+                    end
+                    
                     STA: begin
                         /* Enable memory for write operation */
                         ARF_OutDSel = 2'b10; // Address = AR
@@ -425,6 +485,21 @@ module CPUSystem(
             
             T7: begin
 				case(Opcode)
+                    LDAH: begin
+                        /* Load from Memory to DR, then from DR to Rx */
+                        
+                        /* Enable memory for read operation */
+                        ARF_OutDSel = 2'10; // Address = AR
+                        Mem_CS = 0;
+                        Mem_WR = 0;
+                        
+                        /* Load to DR */
+                        DR_E = 1;
+                        DR_FunSel = 2'b10; // DR = 0x-xxxxxxII
+                        
+                        T_Reset = 1; // end LDAH
+                    end
+                    
                     STA: begin
                         /* Enable memory for write operation */
                         ARF_OutDSel = 2'b10; // Address = AR
