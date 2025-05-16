@@ -203,6 +203,13 @@ module CPUSystem(
             // ========================
             T3: begin
 				case(Opcode)
+                    STA: begin
+                        /* Load AR from IROut[7:0] */
+                        MuxBSel = 2'b11; // Select IROut[7:0]
+                        ARF_FunSel = 2'b10;
+                        ARF_RegSel = 3'b001; // only to AR
+                    end
+                    
                     LDDRL: begin
                         /* Enable memory for read operation */
                         ARF_OutDSel = 2'10; // Address = AR
@@ -268,6 +275,20 @@ module CPUSystem(
             
             T4: begin
 				case(Opcode)
+                    STA: begin
+                        /* Enable memory for write operation */
+                        ARF_OutDSel = 2'b10; // Address = AR
+                        Mem_CS = 0;
+                        Mem_WR = 1;
+                        
+                        RF_OutBSel = {1'b0, RegSel}; // Select Rx
+                        ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
+                        MuxCSel = 2'b00; // Load ALUOut[7:0]
+                                                
+                        ARF_RegSel = 2'b10; // Select AR
+                        ARF_FunSel = 2'b01; // Increment
+                    end
+                    
                     LDDRL: begin
                         /* Enable memory for read operation */
                         ARF_OutDSel = 2'10; // Address = AR
@@ -314,6 +335,20 @@ module CPUSystem(
             
             T5: begin
 				case(Opcode)
+                    STA: begin
+                        /* Enable memory for write operation */
+                        ARF_OutDSel = 2'b10; // Address = AR
+                        Mem_CS = 0;
+                        Mem_WR = 1;
+                        
+                        RF_OutBSel = {1'b0, RegSel}; // Select Rx
+                        ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
+                        MuxCSel = 2'b01; // Load ALUOut[15:8]
+                                                
+                        ARF_RegSel = 2'b10; // Select AR
+                        ARF_FunSel = 2'b01; // Increment
+                    end
+                    
                     LDDRH: begin
                         /* Enable memory for read operation */
                         ARF_OutDSel = 2'10; // Address = AR
@@ -346,6 +381,20 @@ module CPUSystem(
             
             T6: begin
 				case(Opcode)
+                    STA: begin
+                        /* Enable memory for write operation */
+                        ARF_OutDSel = 2'b10; // Address = AR
+                        Mem_CS = 0;
+                        Mem_WR = 1;
+                        
+                        RF_OutBSel = {1'b0, RegSel}; // Select Rx
+                        ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
+                        MuxCSel = 2'b10; // Load ALUOut[23:15]
+                                                
+                        ARF_RegSel = 2'b10; // Select AR
+                        ARF_FunSel = 2'b01; // Increment
+                    end
+                    
                     LDDRH: begin
                         /* Enable memory for read operation */
                         ARF_OutDSel = 2'10; // Address = AR
@@ -376,6 +425,19 @@ module CPUSystem(
             
             T7: begin
 				case(Opcode)
+                    STA: begin
+                        /* Enable memory for write operation */
+                        ARF_OutDSel = 2'b10; // Address = AR
+                        Mem_CS = 0;
+                        Mem_WR = 1;
+                        
+                        RF_OutBSel = {1'b0, RegSel}; // Select Rx
+                        ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
+                        MuxCSel = 2'b11; // Load ALUOut[31:24]
+                                                
+                        T_Reset = 1; // end STA
+                    end
+                    
                     STRIM: begin
                         Mem_CS = 0;
                         Mem_WR = 1;
