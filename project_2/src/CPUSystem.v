@@ -203,6 +203,15 @@ module CPUSystem(
             // ========================
             T3: begin
 				case(Opcode)
+                    LDAL: begin
+                        /* Load from Memory to DR, then from DR to Rx */
+                        
+                        /* Load AR from IROut[7:0] */
+                        MuxBSel = 2'b11; // Select IROut[7:0]
+                        ARF_FunSel = 2'b10;
+                        ARF_RegSel = 3'b001; // only to AR
+                    end
+                    
                     LDAH: begin
                         /* Load from Memory to DR, then from DR to Rx */
                         
@@ -284,6 +293,23 @@ module CPUSystem(
             
             T4: begin
 				case(Opcode)
+                    LDAL: begin
+                        /* Load from Memory to DR, then from DR to Rx */
+                        
+                        /* Enable memory for read operation */
+                        ARF_OutDSel = 2'10; // Address = AR
+                        Mem_CS = 0;
+                        Mem_WR = 0;
+                        
+                        /* Load to DR */
+                        DR_E = 1;
+                        DR_FunSel = 2'b01; // DR = 0x000000II
+                        
+                        /* Increment Address for the next byte read */
+                        ARF_RegSel = 3'b001; // Only enable AR
+                        ARF_FunSel = 2'b01; // Increment
+                    end
+                    
                     LDAH: begin
                         /* Load from Memory to DR, then from DR to Rx */
                         
@@ -361,6 +387,18 @@ module CPUSystem(
             
             T5: begin
 				case(Opcode)
+                    LDAL: begin
+                        /* Load from Memory to DR, then from DR to Rx */
+                        
+                        /* Enable memory for read operation */
+                        ARF_OutDSel = 2'10; // Address = AR
+                        Mem_CS = 0;
+                        Mem_WR = 0;
+                        
+                        /* Load to DR */
+                        DR_E = 1;
+                        DR_FunSel = 2'b10; // DR = 0x0000xxII
+                    end
                     LDAH: begin
                         /* Load from Memory to DR, then from DR to Rx */
                         
@@ -424,6 +462,22 @@ module CPUSystem(
             
             T6: begin
 				case(Opcode)
+                    LDAL: begin
+                        /* Load from Memory to DR, then from DR to Rx */
+
+                        /* Load to Rx */
+                        DR_E = 0;
+                        MuxASel = 2'b10; // Select DROut
+                        RF_RegSel = (RegSel == 2'b00) ? (4'b1000) :
+                                    (RegSel == 2'b01) ? (4'b0100) :
+                                    (RegSel == 2'b10) ? (4'b0010) :
+                                    (RegSel == 2'b11) ? (4'b0001) :
+                                    4'b0000;
+                        RF_FunSel = 3'b010; // Load
+                        
+                        T_Reset = 1; // end LDAL
+                    end
+                    
                     LDAH: begin
                         /* Load from Memory to DR, then from DR to Rx */
                         
