@@ -203,6 +203,30 @@ module CPUSystem(
             // ========================
             T3: begin
 				case(Opcode)
+                    STDR: begin
+                        /* Select the appropriate register based on the DestReg input*/
+                        ARF_RegSel = (DestReg == 3'b000) ? (3'b100) :
+                                     (DestReg == 3'b001) ? (3'b010) :
+                                     (DestReg == 3'b010) ? (3'b001) :
+                                     (DestReg == 3'b011) ? (3'b001) :
+                                     3'b000;
+                        RF_RegSel =  (DestReg == 3'b100) ? (4'b1000) :
+                                     (DestReg == 3'b101) ? (4'b0100) :
+                                     (DestReg == 3'b110) ? (4'b0010) :
+                                     (DestReg == 3'b111) ? (4'b0001) :
+                                     4'b0000;
+                        
+                        /* DROut is connected to RF via MuxA */
+                        MuxASel = 2'b10; // Select DROut
+                        RF_FunSel = 3'b010; // Load to DestReg
+                        
+                        /* DROut is connected to ARF via MuxB */
+                        MuxBSel = 2'b10; // Select DROut
+                        ARF_FunSel = 3'b10; // Load to DestReg
+                        
+                        T_Reset = 1; // end STDR
+                    end
+                    
                     STRIM: begin
                         /* Store OFFSET in a scratch register */
                         MuxASel = 2'b11;     // Select IROut[7:0]
