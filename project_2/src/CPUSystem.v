@@ -1,0 +1,199 @@
+`timescale 1ns / 1ps
+
+module CPUSystem(
+    input wire Clock,
+    input wire Reset,
+    output reg [11:0] T
+);
+    // =============================================
+    // State Encoding (One-Hot for T0-T11)
+    // =============================================
+    localparam T0  = 12'b000000000001;
+    localparam T1  = 12'b000000000010;
+    localparam T2  = 12'b000000000100;
+    localparam T3  = 12'b000000001000;
+    localparam T4  = 12'b000000010000;
+    localparam T5  = 12'b000000100000;
+    localparam T6  = 12'b000001000000;
+    localparam T7  = 12'b000010000000;
+    localparam T8  = 12'b000100000000;
+    localparam T9  = 12'b001000000000;
+    localparam T10 = 12'b010000000000;
+    localparam T11 = 12'b100000000000;
+    
+    // =============================================
+    // Instruction Code Encoding
+    // =============================================
+    localparam BRA      = 6'h00;
+    localparam BNE      = 6'h01;
+    localparam BEQ      = 6'h02;
+    localparam POPL     = 6'h03;
+    localparam PSHL     = 6'h04;
+    localparam POPH     = 6'h05;
+    localparam PSHH     = 6'h06;
+    localparam CALL     = 6'h07;
+    localparam RET      = 6'h08;
+    localparam INC      = 6'h09;
+    localparam DEC      = 6'h0A;
+    localparam LSL      = 6'h0B;
+    localparam LSR      = 6'h0C;
+    localparam ASR      = 6'h0D;
+    localparam CSL      = 6'h0E;
+    localparam CSR      = 6'h0F;
+    localparam NOT      = 6'h10;
+    localparam AND      = 6'h11;
+    localparam ORR      = 6'h12;
+    localparam XOR      = 6'h13;
+    localparam NAND     = 6'h14;
+    localparam ADD      = 6'h15;
+    localparam ADC      = 6'h16;
+    localparam SUB      = 6'h17;
+    localparam MOV      = 6'h18;
+    localparam MOVL     = 6'h19;
+    localparam MOVSH    = 6'h1A;   
+    localparam LDARL    = 6'h1B; 
+    localparam LDARH    = 6'h1C; 
+    localparam STAR     = 6'h1D;
+    localparam LDAL     = 6'h1E;
+    localparam LDAH     = 6'h1F;
+    localparam STA      = 6'h20; 
+    localparam LDDRL    = 6'h21; 
+    localparam LDDRH    = 6'h22; 
+    localparam STDR     = 6'h23;
+    localparam STRIM    = 6'h24; 
+    
+    // =============================================
+    // Control Signals
+    // =============================================
+    reg [5:0] Opcode;
+    reg [1:0] RegSel;
+    reg [7:0] Address;
+    reg [2:0] DestReg, SrcReg1, SrcReg2;
+
+    reg [3:0] RF_RegSel, RF_ScrSel;
+    reg [2:0] RF_OutASel, RF_OutBSel, RF_FunSel;
+    reg [4:0] ALU_FunSel;
+    reg       ALU_WF;
+    reg [1:0] ARF_OutCSel, ARF_OutDSel, ARF_FunSel;
+    reg [2:0] ARF_RegSel;
+    reg       IR_LH, IR_Write, Mem_WR, Mem_CS;
+    reg [1:0] MuxASel, MuxBSel, MuxCSel;
+    reg [1:0] DR_FunSel;
+    reg       DR_E, MuxDSel;
+    reg       T_Reset;
+
+    // =============================================
+    // ALU System Instance
+    // =============================================
+    ArithmeticLogicUnitSystem ALUSys (
+        .RF_OutASel(RF_OutASel),
+        .RF_OutBSel(RF_OutBSel),
+        .RF_FunSel(RF_FunSel),
+        .RF_RegSel(RF_RegSel),
+        .RF_ScrSel(RF_ScrSel),
+        .ALU_FunSel(ALU_FunSel),
+        .ALU_WF(ALU_WF),
+        .ARF_OutCSel(ARF_OutCSel),
+        .ARF_OutDSel(ARF_OutDSel),
+        .ARF_FunSel(ARF_FunSel),
+        .ARF_RegSel(ARF_RegSel),
+        .IR_LH(IR_LH),
+        .IR_Write(IR_Write),
+        .Mem_WR(Mem_WR),
+        .Mem_CS(Mem_CS),
+        .MuxASel(MuxASel),
+        .MuxBSel(MuxBSel),
+        .MuxCSel(MuxCSel),
+        .Clock(Clock),
+        .DR_FunSel(DR_FunSel),
+        .DR_E(DR_E),
+        .MuxDSel(MuxDSel)
+    );
+    // =============================================
+    // State Machine (Sequential Logic)
+    // =============================================
+    always @(posedge Clock or posedge Reset) begin
+        if (Reset)
+            T <= T0;
+        else if (T_Reset) begin
+			T_Reset <= 0;
+			T <= T0;
+        end
+        else
+            T <= {T[10:0], T[11]};
+    
+        // === Instruction Decode at T2 ===
+        if (T == T2) begin
+            Opcode   <= ALUSys.IR.IROut[15:10];
+            RegSel   <= ALUSys.IR.IROut[9:8];
+            Address  <= ALUSys.IR.IROut[7:0];
+            DestReg  <= ALUSys.IR.IROut[9:7];
+            SrcReg1  <= ALUSys.IR.IROut[6:4];
+            SrcReg2  <= ALUSys.IR.IROut[3:1];
+        end
+    end
+
+    // =============================================
+    // Control Signal Generation (Combinational Logic)
+    // =============================================
+    always @(*) begin
+        // Default values (reset everything)
+        RF_RegSel = 0;
+        RF_ScrSel = 0;
+        RF_OutASel = 0;
+        RF_OutBSel = 0;
+        RF_FunSel = 0;
+    
+        ALU_FunSel = 0;
+        ALU_WF = 0;
+    
+        ARF_OutCSel = 0;
+        ARF_OutDSel = 0;
+        ARF_FunSel = 0;
+        ARF_RegSel = 0;
+    
+        IR_LH = 0;
+        IR_Write = 0;
+        Mem_WR = 0;
+        Mem_CS = 1; // Disabled when CS is 1
+    
+        MuxASel = 0;
+        MuxBSel = 0;
+        MuxCSel = 0;
+        DR_FunSel = 0;
+        DR_E = 0;
+        MuxDSel = 0;
+        T_Reset = 0;
+        
+        case (T)
+            // ========================
+            // FETCH Phase
+            // ========================
+            T0: begin
+                /* Fetch 1 (Load LSB to IR) */
+                ARF_OutDSel = 2'b00; // Enable PC
+                Mem_CS = 0; // Enabled when CS is 0
+                Mem_WR = 0;
+                IR_LH = 0;
+                IR_Write = 1;
+                ARF_RegSel = 3'b000; // PC
+                ARF_FunSel = 2'b01; // Increment PC for the next fetch
+            end
+            
+            T1: begin
+                /* Fetch 2 (Load MSB to IR) */
+                Mem_CS = 0;
+                Mem_WR = 0;
+                ARF_OutDSel = 2'b00;
+                IR_LH = 1;
+                IR_Write = 1;
+            end
+            
+            T2: begin
+                // Instruction decoded, PC incremented
+                ARF_RegSel = 3'b000; // PC
+                ARF_FunSel = 2'b01; // Increment PC, next instruction address
+            end
+        endcase
+    end
+endmodule
