@@ -399,6 +399,7 @@ module CPUSystem(
                         DR_E = 1;
                         DR_FunSel = 2'b10; // DR = 0x0000xxII
                     end
+                    
                     LDAH: begin
                         /* Load from Memory to DR, then from DR to Rx */
                         
@@ -550,8 +551,6 @@ module CPUSystem(
                         /* Load to DR */
                         DR_E = 1;
                         DR_FunSel = 2'b10; // DR = 0x-xxxxxxII
-                        
-                        T_Reset = 1; // end LDAH
                     end
                     
                     STA: begin
@@ -584,6 +583,22 @@ module CPUSystem(
             
             T8: begin
 				case(Opcode)
+                    LDAH: begin
+                        /* Load from Memory to DR, then from DR to Rx */
+
+                        /* Load to Rx */
+                        DR_E = 0;
+                        MuxASel = 2'b10; // Select DROut
+                        RF_RegSel = (RegSel == 2'b00) ? (4'b1000) :
+                                    (RegSel == 2'b01) ? (4'b0100) :
+                                    (RegSel == 2'b10) ? (4'b0010) :
+                                    (RegSel == 2'b11) ? (4'b0001) :
+                                    4'b0000;
+                        RF_FunSel = 3'b010; // Load
+                        
+                        T_Reset = 1; // end LDAH
+                    end
+                    
                     STRIM: begin
                         Mem_CS = 0;
                         Mem_WR = 1;
