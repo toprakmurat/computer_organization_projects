@@ -203,6 +203,21 @@ module CPUSystem(
             // ========================
             T3: begin
 				case(Opcode)
+                    LDDRH: begin
+                        /* Enable memory for read operation */
+                        ARF_OutDSel = 2'10; // Address = AR
+                        Mem_CS = 0;
+                        Mem_WR = 0;
+                        
+                        /* Load to DR */
+                        DR_E = 1;
+                        DR_FunSel = 2'b01; // DR = 0x000000II
+                        
+                        /* Increment Address for the next byte read */
+                        ARF_RegSel = 3'b001; // Only enable AR
+                        ARF_FunSel = 2'b01; // Increment
+                    end
+                    
                     STDR: begin
                         /* Select the appropriate register based on the DestReg input*/
                         ARF_RegSel = (DestReg == 3'b000) ? (3'b100) :
@@ -238,6 +253,21 @@ module CPUSystem(
             
             T4: begin
 				case(Opcode)
+                    LDDRH: begin
+                        /* Enable memory for read operation */
+                        ARF_OutDSel = 2'10; // Address = AR
+                        Mem_CS = 0;
+                        Mem_WR = 0;
+                        
+                        /* Load to DR */
+                        DR_E = 1;
+                        DR_FunSel = 2'b10; // DR = 0x0000xxII
+                        
+                        /* Increment Address for the next byte read */
+                        ARF_RegSel = 3'b001; // Only enable AR
+                        ARF_FunSel = 2'b01; // Increment
+                    end
+                    
                     STRIM: begin
                         /* Perform addition operation (AR + OFFSET) */
                         ARF_OutCSel = 2'b10; // Select AR
@@ -256,6 +286,21 @@ module CPUSystem(
             
             T5: begin
 				case(Opcode)
+                    LDDRH: begin
+                        /* Enable memory for read operation */
+                        ARF_OutDSel = 2'10; // Address = AR
+                        Mem_CS = 0;
+                        Mem_WR = 0;
+                        
+                        /* Load to DR */
+                        DR_E = 1;
+                        DR_FunSel = 2'b10; // DR = 0x00xxxxII
+                        
+                        /* Increment Address for the next byte read */
+                        ARF_RegSel = 3'b001; // Only enable AR
+                        ARF_FunSel = 2'b01; // Increment
+                    end
+                    
                     STRIM: begin
                         Mem_CS = 0;
                         Mem_WR = 1;
@@ -273,6 +318,19 @@ module CPUSystem(
             
             T6: begin
 				case(Opcode)
+                    LDDRH: begin
+                        /* Enable memory for read operation */
+                        ARF_OutDSel = 2'10; // Address = AR
+                        Mem_CS = 0;
+                        Mem_WR = 0;
+                        
+                        /* Load to DR */
+                        DR_E = 1;
+                        DR_FunSel = 2'b10; // DR = 0x-xxxxxxII
+                        
+                        T_Reset = 1; // end LDDRH
+                    end
+                    
                     STRIM: begin
                         Mem_CS = 0;
                         Mem_WR = 1;
