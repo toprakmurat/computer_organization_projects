@@ -189,11 +189,123 @@ module CPUSystem(
                 IR_Write = 1;
             end
             
+            // ========================
+            // DECODE Phase
+            // ========================
             T2: begin
                 // Instruction decoded, PC incremented
                 ARF_RegSel = 3'b000; // PC
                 ARF_FunSel = 2'b01; // Increment PC, next instruction address
             end
+            
+            // ========================
+            // EXECUTE Phase
+            // ========================
+            T3: begin
+				case(Opcode)
+                    STRIM: begin
+                        /* Store OFFSET in a scratch register */
+                        MuxASel = 2'b11;     // Select IROut[7:0]
+                        RF_FunSel = 3'b010;  // Select Load
+                        RF_ScrSel = 4'b1000; // Write it to S1 
+                    end
+				endcase
+            end
+            
+            T4: begin
+				case(Opcode)
+                    STRIM: begin
+                        /* Perform addition operation (AR + OFFSET) */
+                        ARF_OutCSel = 2'b10; // Select AR
+                        MuxDSel = 1;         // Send AR to A input of ALU
+                        RF_OutBSel = 3'b100; // Send OFFSET to B input of ALU
+                        
+                        ALU_FunSel = 5'b00100; // Add
+                        ALU_WF = 1;
+                        
+                        /* Store the result(effective address) in AR */
+                        ARF_RegSel = 3'b001;
+                        ARF_FunSel = 2'b10;
+                    end
+				endcase
+            end
+            
+            T5: begin
+				case(Opcode)
+                    STRIM: begin
+                        Mem_CS = 0;
+                        Mem_WR = 1;
+                        ARF_OutDSel = 2'b10; // Memory Address
+                        
+                        RF_OutBSel = {1'b0, RegSel}; // Select Rx
+                        ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
+                        MuxCSel = 2'b00; // Load ALUOut[7:0]
+                        
+                        ARF_RegSel = 2'b10; // Select AR
+                        ARF_FunSel = 2'b01; // Increment
+                    end
+				endcase
+            end
+            
+            T6: begin
+				case(Opcode)
+                    STRIM: begin
+                        Mem_CS = 0;
+                        Mem_WR = 1;
+                        ARF_OutDSel = 2'b10; // Memory Address
+                        
+                        RF_OutBSel = {1'b0, RegSel}; // Select Rx
+                        ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
+                        MuxCSel = 2'b01; // Load ALUOut[15:8]
+                                                
+                        ARF_RegSel = 2'b10; // Select AR
+                        ARF_FunSel = 2'b01; // Increment
+                    end
+				endcase
+            end
+            
+            T7: begin
+				case(Opcode)
+                    STRIM: begin
+                        Mem_CS = 0;
+                        Mem_WR = 1;
+                        ARF_OutDSel = 2'b10; // Memory Address
+                        
+                        RF_OutBSel = {1'b0, RegSel}; // Select Rx
+                        ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
+                        MuxCSel = 2'b10; // Load ALUOut[23:16]
+                                                
+                        ARF_RegSel = 2'b10; // Select AR
+                        ARF_FunSel = 2'b01; // Increment
+                    end
+				endcase
+            end
+            
+            T8: begin
+				case(Opcode)
+                    STRIM: begin
+                        Mem_CS = 0;
+                        Mem_WR = 1;
+                        ARF_OutDSel = 2'b10; // Memory Address
+                        
+                        RF_OutBSel = {1'b0, RegSel}; // Select Rx
+                        ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
+                        MuxCSel = 2'b11; // Load ALUOut[31:24]
+                        
+                        T_Reset = 1; // end STRIM
+                    end
+				endcase
+            end
+            
+            T9: begin
+            end
+            
+            T10: begin
+            end
+            
+            T11: begin
+            end
+            
         endcase
     end
 endmodule
