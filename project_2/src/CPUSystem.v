@@ -223,6 +223,17 @@ module CPUSystem(
                         T_Reset = 1; // reset T
                     end
 
+                    BEQ:begin
+                        if(ALUSys.FlagsOut[3])begin // check if Z flag is 1
+                            MuxBSel = 2'b11; // Send IR(7-0) to ARF
+
+                            ARF_RegSel = 3'b100; // enable PC
+                            ARF_FunSel = 2'b10; // load PC
+                        end
+
+                        T_Reset = 1; // reset T
+                    end
+
                     MOVL: begin
                         /* Select the appropriate register based on the RegSel input*/
                         RF_RegSel =  (RegSel == 2'b00) ? (4'b1000) :
