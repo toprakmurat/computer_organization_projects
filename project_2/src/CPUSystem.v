@@ -203,6 +203,21 @@ module CPUSystem(
             // ========================
             T3: begin
 				case(Opcode)
+                    LDARL: begin
+                        /* Enable memory for reading */
+                        ARF_OutDSel = 2'b10;
+                        Mem_CS = 0;
+                        Mem_WR = 0;
+                        
+                        /* Enable DR and load */
+                        DR_E = 1;
+                        DR_FunSel = 2'b01;
+                        
+                        /* Increment AR */
+                        ARF_RegSel = 3'b001;
+                        ARF_FunSel = 2'b01;
+                    end
+                    
                     LDARH: begin
                         /* Enable memory for reading */
                         ARF_OutDSel = 2'b10;
@@ -318,6 +333,14 @@ module CPUSystem(
             
             T4: begin
 				case(Opcode)
+                    LDARL: begin
+                        DR_FunSel = 2'b10; // DR is fully loaded
+                        
+                        /* Disable memory and AR */
+                        ARF_RegSel = 3'b000;
+                        Mem_CS = 1;  
+                    end
+                    
                     LDARH: begin
                         /* Left shift and load to DR */
                         DR_FunSel = 2'b10;
@@ -445,6 +468,35 @@ module CPUSystem(
             
             T5: begin
 				case(Opcode)
+                    LDARL: begin
+                        /* Select the appropriate register based on the DestReg input*/
+                        ARF_RegSel = (DestReg == 3'b000) ? (3'b100) :
+                                     (DestReg == 3'b001) ? (3'b010) :
+                                     (DestReg == 3'b010) ? (3'b001) :
+                                     (DestReg == 3'b011) ? (3'b001) :
+                                     3'b000;
+                        RF_RegSel =  (DestReg == 3'b100) ? (4'b1000) :
+                                     (DestReg == 3'b101) ? (4'b0100) :
+                                     (DestReg == 3'b110) ? (4'b0010) :
+                                     (DestReg == 3'b111) ? (4'b0001) :
+                                     4'b0000;
+
+                        /* Select DROut for both multiplexers */
+                        MuxASel = 2'b10;
+                        MuxBSel = 2'b10;
+                        
+                        /* 
+                          Enable load operations
+                          
+                          if ARF_RegSel or RF_RegSel is 0, 
+                          Selected funciton will not be applied
+                        */
+                        ARF_FunSel = 2'b10;
+                        RF_FunSel = 2'b10;
+                        
+                        T_Reset = 1; // end LDARL
+                    end
+                    
                     LDARH: begin
                         /* Left shift and load to DR */
                         DR_FunSel = 2'b10;
