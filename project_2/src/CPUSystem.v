@@ -327,26 +327,12 @@ module CPUSystem(
                         // Source selection 
                         if(SrcReg1 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_RegSel = (SrcReg1 == 3'b000) ? (3'b100) : // Enable PC
-                                         (SrcReg1 == 3'b001) ? (3'b010) : // Enable SP
-                                         (SrcReg1 == 3'b010) ? (3'b001) : // Enable AR
-                                         (SrcReg1 == 3'b011) ? (3'b001) : // Enable AR
-                                        3'b000;
-                            ARF_OutCSel = SrcReg1[1:0];
-
-                            
+                            ARF_OutCSel = SrcReg1[1:0];       
                         end
                         else // If the source register is from RF
                         begin
-                            RF_RegSel = (SrcReg1 == 3'b100) ? (4'b1000) : // Enable R1
-                                        (SrcReg1 == 3'b101) ? (4'b0100) : // Enable R2
-                                        (SrcReg1 == 3'b110) ? (4'b0010) : // Enable R3
-                                        (SrcReg1 == 3'b111) ? (4'b0001) : // Enable R4
-                                        4'b0000;
                             RF_OutBSel = {1'b0, SrcReg1[1:0]};
-
                             ALU_FunSel = 5'b10001; // B -> B (32bit)
-                                          
                         end        
                         //Load it
                         if (DestReg <= 3'b011) // If Destination register is from ARF
@@ -1089,7 +1075,7 @@ module CPUSystem(
                         DR_FunSel = 2'b10; // Left shift DR and load it (0x0000IIYY) (Y = new inputs)
                     end
 
-                    DEC:begin
+                    INC:begin
                         //Decrement
                         if(DestReg<= (3'b011)) // If the destination register is from ARF
                         begin
