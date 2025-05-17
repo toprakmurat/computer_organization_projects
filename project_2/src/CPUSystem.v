@@ -1060,7 +1060,8 @@ module CPUSystem(
 
                             ARF_RegSel = (DestReg == 3'b000) ? 3'b100 : // Enable PC
                                         (DestReg == 3'b001) ? 3'b010 : // Enable SP
-                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001; // Enable AR
+                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001 :
+                                        3'b000; // Enable AR
 
                             ARF_FunSel = 2'b10; // Load
                         end 
@@ -1071,7 +1072,8 @@ module CPUSystem(
                             RF_RegSel  = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
                                         (DestReg == 3'b101) ? 4'b0100 : //Enable R2
                                         (DestReg == 3'b110) ? 4'b0010 : //Enable R3
-                                        (DestReg == 3'b111) ? 4'b0001; //Enable R4
+                                        (DestReg == 3'b111) ? 4'b0001:
+                                        4'b0000; //Enable R4
 
                             RF_FunSel  = 3'b010; //Load
 
@@ -1111,7 +1113,8 @@ module CPUSystem(
 
                             ARF_RegSel = (DestReg == 3'b000) ? 3'b100 : // Enable PC
                                         (DestReg == 3'b001) ? 3'b010 : // Enable SP
-                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001; // Enable AR
+                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001:
+                                        3'b000; // Enable AR
 
                             ARF_FunSel = 2'b10; // Load
                         end 
@@ -1122,7 +1125,8 @@ module CPUSystem(
                             RF_RegSel  = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
                                         (DestReg == 3'b101) ? 4'b0100 : //Enable R2
                                         (DestReg == 3'b110) ? 4'b0010 : //Enable R3
-                                        (DestReg == 3'b111) ? 4'b0001; //Enable R4
+                                        (DestReg == 3'b111) ? 4'b0001:
+                                        4'b0000; //Enable R4
 
                             RF_FunSel  = 3'b010; //Load
                         end
