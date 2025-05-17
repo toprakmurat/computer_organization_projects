@@ -252,7 +252,7 @@ module CPUSystem(
                         ARF_OutDSel = 2'b01; // send SP to Memory as an Address
 
                         Mem_CS = 0; // Enable Memory
-                        Mem_WR = 0; // Read from Memory
+                        Mem_WR = 1; // Write to Memory
 
                         // Send selected Rx to ALU
                         RF_OutBSel = {1'b0, RegSel}; // select Rx
