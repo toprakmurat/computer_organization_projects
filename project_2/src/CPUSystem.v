@@ -112,10 +112,17 @@ module CPUSystem(
     // =============================================
     // State Machine (Sequential Logic)
     // =============================================
-    always @(posedge Clock or posedge Reset) begin
-        if (Reset)
-            T <= T0;
-        else if (T_Reset) begin
+    always @(posedge Clock or negedge Reset) begin
+		if (Reset == 0) begin
+			/* Clear Registers */
+			RF_RegSel <= 4'b1111;
+			RF_ScrSel <= 4'b1111;
+			RF_FunSel <= 3'b011;
+				
+			ARF_RegSel <= 3'b111;
+			ARF_FunSel <= 2'b11;
+		end
+		else if (T_Reset) begin
 			T_Reset <= 0;
 			T <= T0;
         end
@@ -136,35 +143,36 @@ module CPUSystem(
     // =============================================
     // Control Signal Generation (Combinational Logic)
     // =============================================
-    always @(*) begin
-        // Default values (reset everything)
-        RF_RegSel = 0;
-        RF_ScrSel = 0;
-        RF_OutASel = 0;
-        RF_OutBSel = 0;
-        RF_FunSel = 0;
-    
-        ALU_FunSel = 0;
-        ALU_WF = 0;
-    
-        ARF_OutCSel = 0;
-        ARF_OutDSel = 0;
-        ARF_FunSel = 0;
-        ARF_RegSel = 0;
-    
-        IR_LH = 0;
-        IR_Write = 0;
-        Mem_WR = 0;
-        Mem_CS = 1; // Disabled when CS is 1
-    
-        MuxASel = 0;
-        MuxBSel = 0;
-        MuxCSel = 0;
-        DR_FunSel = 0;
-        DR_E = 0;
-        MuxDSel = 0;
-        T_Reset = 0;
-        
+    always @(*) begin 
+			// Default values (reset everything)     
+			
+			RF_RegSel = 0;
+			RF_ScrSel = 0;
+			RF_OutASel = 0;
+			RF_OutBSel = 0;
+			RF_FunSel = 0;
+		
+			ALU_FunSel = 0;
+			ALU_WF = 0;
+		
+			ARF_OutCSel = 0;
+			ARF_OutDSel = 0;
+			ARF_FunSel = 0;
+			ARF_RegSel = 0;
+		
+			IR_LH = 0;
+			IR_Write = 0;
+			Mem_WR = 0;
+			Mem_CS = 1; // Disabled when CS is 1
+		
+			MuxASel = 0;
+			MuxBSel = 0;
+			MuxCSel = 0;
+			DR_FunSel = 0;
+			DR_E = 0;
+			MuxDSel = 0;
+			T_Reset = 0;
+			        
         case (T)
             // ========================
             // FETCH Phase
@@ -300,6 +308,7 @@ module CPUSystem(
                         ARF_RegSel = 3'b010; // Enable SP
                         ARF_FunSel = 2'b01; // Increment SP
                     end
+
                     RET:begin
                         ARF_OutDSel = 2'b01; // send SP to Memory as an Address
 
@@ -399,6 +408,7 @@ module CPUSystem(
                         end
                         T_Reset = 1; // reset T    
                     end
+
                     LSR:begin
                         // Source selection and lsr 32 bit
 
@@ -444,6 +454,7 @@ module CPUSystem(
                         end
                         T_Reset = 1; // reset T 
                     end
+
                     ASR:begin
                         // Source selection and asr 32 bit
 
@@ -485,6 +496,7 @@ module CPUSystem(
                         end
                         T_Reset = 1; // reset T 
                     end
+
                     CSL:begin
                         // Source selection and csl 32 bit
 
@@ -526,6 +538,7 @@ module CPUSystem(
                         end
                         T_Reset = 1; // reset T 
                     end
+
                     CSR:begin
                         // Source selection and csr 
 
@@ -567,6 +580,7 @@ module CPUSystem(
                         end
                         T_Reset = 1; // reset T 
                     end
+
                     NOT:begin
                         // Source selection and not 32 bit
 
@@ -790,6 +804,7 @@ module CPUSystem(
                         end
                         T_Reset = 1; // reset T
                     end
+
                     MOVL: begin
                         /* Select the appropriate register based on the RegSel input*/
                         RF_RegSel =  (RegSel == 2'b00) ? (4'b1000) :
@@ -1418,15 +1433,24 @@ module CPUSystem(
                         T_Reset = 1; // reset T
                     end
                     LDARL: begin
-                        DR_FunSel = 2'b10; // DR is fully loaded
+                        /* Enable memory for reading */
+                        ARF_OutDSel = 2'b10;
+                        Mem_CS = 0;
+                        Mem_WR = 0;
                         
-                        /* Disable memory and AR */
-                        ARF_RegSel = 3'b000;
-                        Mem_CS = 1;  
+                        /* Enable DR and load */
+                        DR_E = 1;
+                        DR_FunSel = 2'b10; 
                     end
                     
                     LDARH: begin
-                        /* Left shift and load to DR */
+                        /* Enable memory for reading */
+                        ARF_OutDSel = 2'b10;
+                        Mem_CS = 0;
+                        Mem_WR = 0;
+                        
+                        /* Enable DR and left-shift load */
+                        DR_E = 1;
                         DR_FunSel = 2'b10;
                         
                         /* Increment AR */
@@ -1435,9 +1459,6 @@ module CPUSystem(
                     end
                     
                     STAR: begin
-                        // Disable S1 for writing, AR will be incremented
-                        RF_ScrSel = 4'b0000;
-                    
                         if (SrcReg1[2] == 0) begin
                             RF_OutBSel = 3'b100;
                         end else begin
@@ -1450,8 +1471,8 @@ module CPUSystem(
                         Mem_WR = 1;
                         
                         // Load from ALU
-                        ALU_FunSel = 5'b00001;
-                        MuxCSel = 2'b00;
+                        ALU_FunSel = 5'b10001;
+                        MuxCSel = 2'b11;
                         
                         // Increment AR
                         ARF_RegSel = 3'b001;
@@ -1645,7 +1666,13 @@ module CPUSystem(
                     end
                     
                     LDARH: begin
-                        /* Left shift and load to DR */
+                        /* Enable memory for reading */
+                        ARF_OutDSel = 2'b10;
+                        Mem_CS = 0;
+                        Mem_WR = 0;
+                        
+                        /* Enable DR and left-shift load */
+                        DR_E = 1;
                         DR_FunSel = 2'b10;
                         
                         /* Increment AR */
@@ -1654,9 +1681,20 @@ module CPUSystem(
                     end
                     
                     STAR: begin
+                        if (SrcReg1[2] == 0) begin
+                            RF_OutBSel = 3'b100;
+                        end else begin
+                            RF_OutBSel = {1'b0, SrcReg1[1:0]};
+                        end
+                        
+                        // Enable memory for writing
+                        ARF_OutDSel = 2'b10;
+                        Mem_CS = 0;
+                        Mem_WR = 1;
+                        
                         // Load from ALU
-                        ALU_FunSel = 5'b00001;
-                        MuxCSel = 2'b01;
+                        ALU_FunSel = 5'b10001;
+                        MuxCSel = 2'b10;
                         
                         // Increment AR
                         ARF_RegSel = 3'b001;
@@ -1773,17 +1811,31 @@ module CPUSystem(
                     end
 
                     LDARH: begin
-                        DR_FunSel = 2'b10; // DR is fully loaded
+                        /* Enable memory for reading */
+                        ARF_OutDSel = 2'b10;
+                        Mem_CS = 0;
+                        Mem_WR = 0;
                         
-                        /* Disable memory and AR */
-                        ARF_RegSel = 3'b000;
-                        Mem_CS = 1;        
+                        /* Enable DR and left-shift load */
+                        DR_E = 1;
+                        DR_FunSel = 2'b10; 
                     end
                     
                     STAR: begin
+                        if (SrcReg1[2] == 0) begin
+                            RF_OutBSel = 3'b100;
+                        end else begin
+                            RF_OutBSel = {1'b0, SrcReg1[1:0]};
+                        end
+                        
+                        // Enable memory for writing
+                        ARF_OutDSel = 2'b10;
+                        Mem_CS = 0;
+                        Mem_WR = 1;
+                        
                         // Load from ALU
-                        ALU_FunSel = 5'b00001;
-                        MuxCSel = 2'b10;
+                        ALU_FunSel = 5'b10001;
+                        MuxCSel = 2'b01;
                         
                         // Increment AR
                         ARF_RegSel = 3'b001;
@@ -1920,9 +1972,20 @@ module CPUSystem(
                     end
                     
                     STAR: begin
+                        if (SrcReg1[2] == 0) begin
+                            RF_OutBSel = 3'b100;
+                        end else begin
+                            RF_OutBSel = {1'b0, SrcReg1[1:0]};
+                        end
+                        
+                        // Enable memory for writing
+                        ARF_OutDSel = 2'b10;
+                        Mem_CS = 0;
+                        Mem_WR = 1;
+                        
                         // Load from ALU
-                        ALU_FunSel = 5'b00001;
-                        MuxCSel = 2'b11;
+                        ALU_FunSel = 5'b10001;
+                        MuxCSel = 2'b00;
                         
                         T_Reset = 1; // end STAR
                     end
