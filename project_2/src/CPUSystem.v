@@ -337,7 +337,7 @@ module CPUSystem(
                         ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
                         MuxCSel = 2'b00; // Load ALUOut[7:0]
                                                 
-                        ARF_RegSel = 2'b10; // Select AR
+                        ARF_RegSel = 2'b001; // Select AR
                         ARF_FunSel = 2'b01; // Increment
                     end
                     
@@ -427,7 +427,7 @@ module CPUSystem(
                         ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
                         MuxCSel = 2'b01; // Load ALUOut[15:8]
                                                 
-                        ARF_RegSel = 2'b10; // Select AR
+                        ARF_RegSel = 2'b001; // Select AR
                         ARF_FunSel = 2'b01; // Increment
                     end
                     
@@ -455,7 +455,7 @@ module CPUSystem(
                         ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
                         MuxCSel = 2'b00; // Load ALUOut[7:0]
                         
-                        ARF_RegSel = 2'b10; // Select AR
+                        ARF_RegSel = 2'b001; // Select AR
                         ARF_FunSel = 2'b01; // Increment
                     end
 				endcase
@@ -506,7 +506,7 @@ module CPUSystem(
                         ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
                         MuxCSel = 2'b10; // Load ALUOut[23:15]
                                                 
-                        ARF_RegSel = 2'b10; // Select AR
+                        ARF_RegSel = 2'b001; // Select AR
                         ARF_FunSel = 2'b01; // Increment
                     end
                     
@@ -532,7 +532,7 @@ module CPUSystem(
                         ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
                         MuxCSel = 2'b01; // Load ALUOut[15:8]
                                                 
-                        ARF_RegSel = 2'b10; // Select AR
+                        ARF_RegSel = 2'b001; // Select AR
                         ARF_FunSel = 2'b01; // Increment
                     end
 				endcase
@@ -575,7 +575,7 @@ module CPUSystem(
                         ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
                         MuxCSel = 2'b10; // Load ALUOut[23:16]
                                                 
-                        ARF_RegSel = 2'b10; // Select AR
+                        ARF_RegSel = 2'b001; // Select AR
                         ARF_FunSel = 2'b01; // Increment
                     end
 				endcase
