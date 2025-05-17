@@ -281,6 +281,25 @@ module CPUSystem(
                         ARF_RegSel = 3'b010; // Enable SP
                         ARF_FunSel = 2'b01; // Increment SP
                     end
+
+                    PSHH:begin
+                        ARF_OutDSel = 2'b01; // send SP to Memory as an Address
+
+                        Mem_CS = 0; // Enable Memory
+                        Mem_WR = 1; // Write to Memory
+
+                        // Send selected Rx to ALU
+                        RF_OutBSel = {1'b0, RegSel}; // select Rx
+
+                        // Send ALU input to ALU output without any change
+                        ALU_FunSel = 5'b10001; // B -> B (32bit)
+                        
+                        MuxCSel = 2'b00; // ALUOut (7-0) -> Memory
+
+                        // SP <- SP + 1
+                        ARF_RegSel = 3'b010; // Enable SP
+                        ARF_FunSel = 2'b01; // Increment SP
+                    end
                     MOVL: begin
                         /* Select the appropriate register based on the RegSel input*/
                         RF_RegSel =  (RegSel == 2'b00) ? (4'b1000) :
@@ -481,6 +500,26 @@ module CPUSystem(
                         ARF_RegSel = 3'b010; // Enable SP
                         ARF_FunSel = 2'b01; // Increment SP
                     end
+
+                    PSHH:begin
+                        ARF_OutDSel = 2'b01; // send SP to Memory as an Address
+
+                        Mem_CS = 0; // Enable Memory
+                        Mem_WR = 1; // Write to Memory
+
+                        // Send selected Rx to ALU
+                        RF_OutBSel = {1'b0, RegSel}; // select Rx
+
+                        // Send ALU input to ALU output without any change
+                        ALU_FunSel = 5'b10001; // B -> B (32bit)
+                        
+                        MuxCSel = 2'b01; // ALUOut (15-8) -> Memory
+                        
+                        // SP <- SP + 1
+                        ARF_RegSel = 3'b010; // Enable SP
+                        ARF_FunSel = 2'b01; // Increment SP
+                    end
+
                     LDARL: begin
                         DR_FunSel = 2'b10; // DR is fully loaded
                         
@@ -649,6 +688,25 @@ module CPUSystem(
                         ARF_RegSel = 3'b010; // Enable SP
                         ARF_FunSel = 2'b01; // Increment SP
                     end
+
+                    PSHH:begin
+                        ARF_OutDSel = 2'b01; // send SP to Memory as an Address
+
+                        Mem_CS = 0; // Enable Memory
+                        Mem_WR = 1; // Write to Memory
+
+                        // Send selected Rx to ALU
+                        RF_OutBSel = {1'b0, RegSel}; // select Rx
+
+                        // Send ALU input to ALU output without any change
+                        ALU_FunSel = 5'b10001; // B -> B (32bit)
+                        
+                        MuxCSel = 2'b10; // ALUOut (23-16) -> Memory
+                        
+                        // SP <- SP + 1
+                        ARF_RegSel = 3'b010; // Enable SP
+                        ARF_FunSel = 2'b01; // Increment SP
+                    end
                     LDARL: begin
                         /* Select the appropriate register based on the DestReg input*/
                         ARF_RegSel = (DestReg == 3'b000) ? (3'b100) :
@@ -786,6 +844,26 @@ module CPUSystem(
                         ARF_RegSel = 3'b010; // Enable SP
                         ARF_FunSel = 2'b01; // Decrement SP
                     end
+
+                    PSHH:begin
+                        ARF_OutDSel = 2'b01; // send SP to Memory as an Address
+
+                        Mem_CS = 0; // Enable Memory
+                        Mem_WR = 1; // Write to Memory
+
+                        // Send selected Rx to ALU
+                        RF_OutBSel = {1'b0, RegSel}; // select Rx
+
+                        // Send ALU input to ALU output without any change
+                        ALU_FunSel = 5'b10001; // B -> B (32bit)
+                        
+                        MuxCSel = 2'b11; // ALUOut (31-24) -> Memory
+                        
+                        // SP <- SP - 1
+                        ARF_RegSel = 3'b010; // Enable SP
+                        ARF_FunSel = 2'b00; // Decrement SP
+                    end
+
                     LDARH: begin
                         DR_FunSel = 2'b10; // DR is fully loaded
                         
@@ -896,6 +974,12 @@ module CPUSystem(
 
                         T_Reset = 1; // reset T
                     end
+
+                    PSHH:begin
+                        // SP <- SP - 1
+                        ARF_RegSel = 3'b010; // Enable SP
+                        ARF_FunSel = 2'b00; // Decrement SP
+                    end
                     LDARH: begin
                         /* Select the appropriate register based on the DestReg input*/
                         ARF_RegSel = (DestReg == 3'b000) ? (3'b100) :
@@ -976,6 +1060,12 @@ module CPUSystem(
             
             T8: begin
 				case(Opcode)
+                    PSHH:begin
+                        // SP <- SP - 1
+                        ARF_RegSel = 3'b010; // Enable SP
+                        ARF_FunSel = 2'b00; // Decrement SP
+                    end
+
                     LDAH: begin
                         /* Load from Memory to DR, then from DR to Rx */
 
@@ -1007,6 +1097,15 @@ module CPUSystem(
             end
             
             T9: begin
+                case(Opcode)
+                PSHH:begin
+                        // SP <- SP - 1
+                        ARF_RegSel = 3'b010; // Enable SP
+                        ARF_FunSel = 2'b00; // Decrement SP
+
+                        T_Reset = 1; // reset T
+                    end
+                endcase
             end
             
             T10: begin
