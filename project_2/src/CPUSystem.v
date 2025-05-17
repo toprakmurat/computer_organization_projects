@@ -203,6 +203,20 @@ module CPUSystem(
             // ========================
             T3: begin
 				case(Opcode)
+                    MOVL: begin
+                        /* Select the appropriate register based on the RegSel input*/
+                        RF_RegSel =  (RegSel == 2'b00) ? (4'b1000) :
+                                     (RegSel == 2'b01) ? (4'b0100) :
+                                     (RegSel == 2'b10) ? (4'b0010) :
+                                     (RegSel == 2'b11) ? (4'b0001) :
+                                     4'b0000;
+                        
+                        MuxASel = 2'b11; // Select IROut[7:0] (IMMEDIATE)
+                        RF_FunSel = 3'b100; // Load only LSB 8 bits, clear upper bits
+                        
+                        T_Reset = 1; // end MOVL
+                    end
+                    
                     MOVSH: begin
                         /* Select the appropriate register based on the RegSel input*/
                         RF_RegSel =  (RegSel == 2'b00) ? (4'b1000) :
