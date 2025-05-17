@@ -203,6 +203,16 @@ module CPUSystem(
             // ========================
             T3: begin
 				case(Opcode)
+                    STAR: begin
+                        if (SrcReg1[2] == 0) begin
+                            // Selected ARF register is loaded to S1 
+                            ARF_OutCSel = SrcReg1[1:0];
+                            MuxASel = 2'b01;
+                            RF_ScrSel = 4'b1000; // Enable only S1
+                            RF_FunSel = 3'b010; // Load to S1
+                        end
+                    end
+                    
                     LDAL: begin
                         /* Load from Memory to DR, then from DR to Rx */
                         
@@ -293,6 +303,30 @@ module CPUSystem(
             
             T4: begin
 				case(Opcode)
+                    STAR: begin
+                        // Disable S1 for writing, AR will be incremented
+                        RF_ScrSel = 4'b0000;
+                    
+                        if (SrcReg1[2] == 0) begin
+                            RF_OutBSel = 3'b100;
+                        end else begin
+                            RF_OutBSel = {0, SrcReg1[1:0]};
+                        end
+                        
+                        // Enable memory for writing
+                        ARF_OutDSel = 2'b10;
+                        Mem_CS = 0;
+                        Mem_WR = 1;
+                        
+                        // Load from ALU
+                        ALU_FunSel = 5'b00001;
+                        MuxCSel = 2'b00;
+                        
+                        // Increment AR
+                        ARF_RegSel = 3'b001;
+                        ARF_FunSel = 2'01;
+                    end
+                    
                     LDAL: begin
                         /* Load from Memory to DR, then from DR to Rx */
                         
@@ -387,6 +421,16 @@ module CPUSystem(
             
             T5: begin
 				case(Opcode)
+                    STAR: begin
+                        // Load from ALU
+                        ALU_FunSel = 5'b00001;
+                        MuxCSel = 2'b01;
+                        
+                        // Increment AR
+                        ARF_RegSel = 3'b001;
+                        ARF_FunSel = 2'01;
+                    end
+                    
                     LDAL: begin
                         /* Load from Memory to DR, then from DR to Rx */
                         
@@ -463,6 +507,16 @@ module CPUSystem(
             
             T6: begin
 				case(Opcode)
+                    STAR: begin
+                        // Load from ALU
+                        ALU_FunSel = 5'b00001;
+                        MuxCSel = 2'b10;
+                        
+                        // Increment AR
+                        ARF_RegSel = 3'b001;
+                        ARF_FunSel = 2'01;
+                    end
+                    
                     LDAL: begin
                         /* Load from Memory to DR, then from DR to Rx */
 
@@ -540,6 +594,14 @@ module CPUSystem(
             
             T7: begin
 				case(Opcode)
+                    STAR: begin
+                        // Load from ALU
+                        ALU_FunSel = 5'b00001;
+                        MuxCSel = 2'b11;
+                        
+                        T_Reset = 1; // end STAR
+                    end
+                    
                     LDAH: begin
                         /* Load from Memory to DR, then from DR to Rx */
                         
