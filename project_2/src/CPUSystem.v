@@ -318,9 +318,11 @@ module CPUSystem(
                         // Source selection and incrementation
                         if(SrcReg1 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_RegSel =(SrcReg1 == 3'b000) ? (3'b100) : // Enable PC
-                                        (SrcReg1 == 3'b001) ? (3'b010) : // Enable SP
-                                        (SrcReg1 == 3'b010 || SrcReg1 == 3'b011) ? (3'b001); // Enable AR
+                            ARF_RegSel = (SrcReg1 == 3'b000) ? (3'b100) : // Enable PC
+                                         (SrcReg1 == 3'b001) ? (3'b010) : // Enable SP
+                                         (SrcReg1 == 3'b010) ? (3'b001) : // Enable AR
+                                         (SrcReg1 == 3'b011) ? (3'b001) : // Enable AR
+                                         3'b000;
 
                             ARF_FunSel = 2'b01; // Increment
                         end
@@ -329,7 +331,8 @@ module CPUSystem(
                             RF_RegSel = (SrcReg1 == 3'b100) ? (4'b1000) : // Enable R1
                                         (SrcReg1 == 3'b101) ? (4'b0100) : // Enable R2
                                         (SrcReg1 == 3'b110) ? (4'b0010) : // Enable R3
-                                        (SrcReg1 == 3'b111) ? (4'b0001); // Enable R4
+                                        (SrcReg1 == 3'b111) ? (4'b0001) : // Enable R4
+                                        4'b0000;
                                           
                             RF_FunSel = 3'b001 ; // increment
                         end         
@@ -339,9 +342,11 @@ module CPUSystem(
                         // Source selection and incrementation
                         if(SrcReg1 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_RegSel =(SrcReg1 == 3'b000) ? (3'b100) : // Enable PC
-                                        (SrcReg1 == 3'b001) ? (3'b010) : // Enable SP
-                                        (SrcReg1 == 3'b010 || SrcReg1 == 3'b011) ? (3'b001); // Enable AR
+                            ARF_RegSel = (SrcReg1 == 3'b000) ? (3'b100) : // Enable PC
+                                         (SrcReg1 == 3'b001) ? (3'b010) : // Enable SP
+                                         (SrcReg1 == 3'b010) ? (3'b001) : // Enable AR
+                                         (SrcReg1 == 3'b011) ? (3'b001) : // Enable AR
+                                        3'b000;
 
                             ARF_FunSel = 2'b00; // Decrement
                         end
@@ -350,7 +355,8 @@ module CPUSystem(
                             RF_RegSel = (SrcReg1 == 3'b100) ? (4'b1000) : // Enable R1
                                         (SrcReg1 == 3'b101) ? (4'b0100) : // Enable R2
                                         (SrcReg1 == 3'b110) ? (4'b0010) : // Enable R3
-                                        (SrcReg1 == 3'b111) ? (4'b0001); // Enable R4
+                                        (SrcReg1 == 3'b111) ? (4'b0001) : // Enable R4
+                                        4'b0000;
                                           
                             RF_FunSel = 3'b000 ; // Decrement
                         end         
@@ -360,18 +366,10 @@ module CPUSystem(
                         // Source selection and lsl 32 bit
 
                         if(SrcReg1 <= (3'b011)) // If the source register is from ARF
-                        begin
-                            ARF_OutCSel  = (SrcReg1 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg1 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg1 == 3'b010 || SrcReg1 == 3'b011) ? (2'b10); //Send AR 
-                        end
+							ARF_OutCSel = SrcReg1[1:0];
+
                         else // If the source register is from RF
-                        begin
-                            RF_OutASel   = (SrcReg1 == 3'b100) ? 3'b000 : // Send R1
-                                            (SrcReg1 == 3'b101) ? 3'b001 : // Send R2
-                                            (SrcReg1 == 3'b110) ? 3'b010 : // Send R3
-                                            (SrcReg1 == 3'b111) ? 3'b011; // Send R4
-                        end  
+							RF_OutASel = {1'b0, SrcReg1[1:0]};
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
 
@@ -381,19 +379,21 @@ module CPUSystem(
                         if (DestReg <= 3'b011) // If Destination register is from ARF
                         begin
                             MuxBSel    = 2'b00; 
-                            ARF_RegSel = (DestReg == 3'b000) ? 3'b100 : // Enable PC
-                                        (DestReg == 3'b001) ? 3'b010 : // Enable SP
-                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001; // Enable AR
-
+                            ARF_RegSel = (DestReg == 3'b000) ? (3'b100) : // Enable PC
+                                         (DestReg == 3'b001) ? (3'b010) : // Enable SP
+                                         (DestReg == 3'b010) ? (3'b001) : // Enable AR
+                                         (DestReg == 3'b011) ? (3'b001) : // Enable AR
+                                         3'b000;
                             ARF_FunSel = 2'b10; // Load
                         end 
                         else // If Destination register is from RF
                         begin
-                            MuxASel    = 2'b00; 
-                            RF_RegSel  = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
+                            MuxASel   = 2'b00; 
+                            RF_RegSel = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
                                         (DestReg == 3'b101) ? 4'b0100 : //Enable R2
                                         (DestReg == 3'b110) ? 4'b0010 : //Enable R3
-                                        (DestReg == 3'b111) ? 4'b0001; //Enable R4
+                                        (DestReg == 3'b111) ? 4'b0001 : //Enable R4
+                                        4'b0000;
 
                             RF_FunSel  = 3'b010; //Load
                         end
@@ -404,16 +404,15 @@ module CPUSystem(
 
                         if(SrcReg1 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_OutCSel  = (SrcReg1 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg1 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg1 == 3'b010 || SrcReg1 == 3'b011) ? (2'b10); //Send AR 
+							ARF_OutCSel = SrcReg1[1:0];
                         end
                         else // If the source register is from RF
                         begin
-                            RF_OutASel   = (SrcReg1 == 3'b100) ? 3'b000 : // Send R1
-                                            (SrcReg1 == 3'b101) ? 3'b001 : // Send R2
-                                            (SrcReg1 == 3'b110) ? 3'b010 : // Send R3
-                                            (SrcReg1 == 3'b111) ? 3'b011; // Send R4
+                            RF_OutASel = (SrcReg1 == 3'b100) ? 3'b000 : // Send R1
+                                         (SrcReg1 == 3'b101) ? 3'b001 : // Send R2
+                                         (SrcReg1 == 3'b110) ? 3'b010 : // Send R3
+                                         (SrcReg1 == 3'b111) ? 3'b011 : // Send R4
+                                         3'b000;
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
@@ -424,19 +423,22 @@ module CPUSystem(
                         if (DestReg <= 3'b011) // If Destination register is from ARF
                         begin
                             MuxBSel    = 2'b00; 
-                            ARF_RegSel = (DestReg == 3'b000) ? 3'b100 : // Enable PC
-                                        (DestReg == 3'b001) ? 3'b010 : // Enable SP
-                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001; // Enable AR
-
+                            ARF_RegSel = (DestReg == 3'b000) ? (3'b100) : // Enable PC
+                                         (DestReg == 3'b001) ? (3'b010) : // Enable SP
+                                         (DestReg == 3'b010) ? (3'b001) : // Enable AR
+                                         (DestReg == 3'b011) ? (3'b001) : // Enable AR
+                                         3'b000;
+                                        
                             ARF_FunSel = 2'b10; // Load
                         end 
                         else // If Destination register is from RF
                         begin
-                            MuxASel    = 2'b00; 
-                            RF_RegSel  = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
+                            MuxASel   = 2'b00; 
+                            RF_RegSel = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
                                         (DestReg == 3'b101) ? 4'b0100 : //Enable R2
                                         (DestReg == 3'b110) ? 4'b0010 : //Enable R3
-                                        (DestReg == 3'b111) ? 4'b0001; //Enable R4
+                                        (DestReg == 3'b111) ? 4'b0001 : //Enable R4
+                                        4'b0000;
 
                             RF_FunSel  = 3'b010; //Load
                         end
@@ -447,16 +449,11 @@ module CPUSystem(
 
                         if(SrcReg1 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_OutCSel  = (SrcReg1 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg1 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg1 == 3'b010 || SrcReg1 == 3'b011) ? (2'b10); //Send AR 
+							ARF_OutCSel = SrcReg1[1:0];
                         end
                         else // If the source register is from RF
                         begin
-                            RF_OutASel   = (SrcReg1 == 3'b100) ? 3'b000 : // Send R1
-                                            (SrcReg1 == 3'b101) ? 3'b001 : // Send R2
-                                            (SrcReg1 == 3'b110) ? 3'b010 : // Send R3
-                                            (SrcReg1 == 3'b111) ? 3'b011; // Send R4
+							RF_OutASel = {1'b0, SrcReg1[1:0]};
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
@@ -467,19 +464,22 @@ module CPUSystem(
                         if (DestReg <= 3'b011) // If Destination register is from ARF
                         begin
                             MuxBSel    = 2'b00; 
-                            ARF_RegSel = (DestReg == 3'b000) ? 3'b100 : // Enable PC
-                                        (DestReg == 3'b001) ? 3'b010 : // Enable SP
-                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001; // Enable AR
+                            ARF_RegSel = (DestReg == 3'b000) ? (3'b100) : // Enable PC
+                                         (DestReg == 3'b001) ? (3'b010) : // Enable SP
+                                         (DestReg == 3'b010) ? (3'b001) : // Enable AR
+                                         (DestReg == 3'b011) ? (3'b001) : // Enable AR
+                                         3'b000;
 
                             ARF_FunSel = 2'b10; // Load
                         end 
                         else // If Destination register is from RF
                         begin
-                            MuxASel    = 2'b00; 
-                            RF_RegSel  = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
+                            MuxASel   = 2'b00; 
+                            RF_RegSel = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
                                         (DestReg == 3'b101) ? 4'b0100 : //Enable R2
                                         (DestReg == 3'b110) ? 4'b0010 : //Enable R3
-                                        (DestReg == 3'b111) ? 4'b0001; //Enable R4
+                                        (DestReg == 3'b111) ? 4'b0001 : //Enable R4
+                                        4'b0000;
 
                             RF_FunSel  = 3'b010; //Load
                         end
@@ -490,16 +490,11 @@ module CPUSystem(
 
                         if(SrcReg1 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_OutCSel  = (SrcReg1 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg1 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg1 == 3'b010 || SrcReg1 == 3'b011) ? (2'b10); //Send AR 
+							ARF_OutCSel = SrcReg1[1:0];
                         end
                         else // If the source register is from RF
                         begin
-                            RF_OutASel   = (SrcReg1 == 3'b100) ? 3'b000 : // Send R1
-                                            (SrcReg1 == 3'b101) ? 3'b001 : // Send R2
-                                            (SrcReg1 == 3'b110) ? 3'b010 : // Send R3
-                                            (SrcReg1 == 3'b111) ? 3'b011; // Send R4
+							RF_OutASel = {1'b0, SrcReg1[1:0]};
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
@@ -510,19 +505,22 @@ module CPUSystem(
                         if (DestReg <= 3'b011) // If Destination register is from ARF
                         begin
                             MuxBSel    = 2'b00; 
-                            ARF_RegSel = (DestReg == 3'b000) ? 3'b100 : // Enable PC
-                                        (DestReg == 3'b001) ? 3'b010 : // Enable SP
-                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001; // Enable AR
+                            ARF_RegSel = (DestReg == 3'b000) ? (3'b100) : // Enable PC
+                                         (DestReg == 3'b001) ? (3'b010) : // Enable SP
+                                         (DestReg == 3'b010) ? (3'b001) : // Enable AR
+                                         (DestReg == 3'b011) ? (3'b001) : // Enable AR
+                                         3'b000;
 
                             ARF_FunSel = 2'b10; // Load
                         end 
                         else // If Destination register is from RF
                         begin
-                            MuxASel    = 2'b00; 
-                            RF_RegSel  = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
+                            MuxASel   = 2'b00; 
+                            RF_RegSel = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
                                         (DestReg == 3'b101) ? 4'b0100 : //Enable R2
                                         (DestReg == 3'b110) ? 4'b0010 : //Enable R3
-                                        (DestReg == 3'b111) ? 4'b0001; //Enable R4
+                                        (DestReg == 3'b111) ? 4'b0001 : //Enable R4
+                                        4'b0000;
 
                             RF_FunSel  = 3'b010; //Load
                         end
@@ -533,16 +531,11 @@ module CPUSystem(
 
                         if(SrcReg1 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_OutCSel  = (SrcReg1 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg1 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg1 == 3'b010 || SrcReg1 == 3'b011) ? (2'b10); //Send AR 
+							ARF_OutCSel = SrcReg1[1:0];
                         end
                         else // If the source register is from RF
                         begin
-                            RF_OutASel   = (SrcReg1 == 3'b100) ? 3'b000 : // Send R1
-                                            (SrcReg1 == 3'b101) ? 3'b001 : // Send R2
-                                            (SrcReg1 == 3'b110) ? 3'b010 : // Send R3
-                                            (SrcReg1 == 3'b111) ? 3'b011; // Send R4
+							RF_OutASel = {1'b0, SrcReg1[1:0]};
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
@@ -553,19 +546,22 @@ module CPUSystem(
                         if (DestReg <= 3'b011) // If Destination register is from ARF
                         begin
                             MuxBSel    = 2'b00; 
-                            ARF_RegSel = (DestReg == 3'b000) ? 3'b100 : // Enable PC
-                                        (DestReg == 3'b001) ? 3'b010 : // Enable SP
-                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001; // Enable AR
-
+                            ARF_RegSel = (DestReg == 3'b000) ? (3'b100) : // Enable PC
+                                         (DestReg == 3'b001) ? (3'b010) : // Enable SP
+                                         (DestReg == 3'b010) ? (3'b001) : // Enable AR
+                                         (DestReg == 3'b011) ? (3'b001) : // Enable AR
+                                         3'b000;
+                                         
                             ARF_FunSel = 2'b10; // Load
                         end 
                         else // If Destination register is from RF
                         begin
-                            MuxASel    = 2'b00; 
-                            RF_RegSel  = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
+                            MuxASel   = 2'b00; 
+                            RF_RegSel = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
                                         (DestReg == 3'b101) ? 4'b0100 : //Enable R2
                                         (DestReg == 3'b110) ? 4'b0010 : //Enable R3
-                                        (DestReg == 3'b111) ? 4'b0001; //Enable R4
+                                        (DestReg == 3'b111) ? 4'b0001 : //Enable R4
+                                        4'b0000;
 
                             RF_FunSel  = 3'b010; //Load
                         end
@@ -576,16 +572,11 @@ module CPUSystem(
 
                         if(SrcReg1 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_OutCSel  = (SrcReg1 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg1 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg1 == 3'b010 || SrcReg1 == 3'b011) ? (2'b10); //Send AR 
+                            ARF_OutCSel = SrcReg1[1:0];
                         end
                         else // If the source register is from RF
                         begin
-                            RF_OutASel   = (SrcReg1 == 3'b100) ? 3'b000 : // Send R1
-                                            (SrcReg1 == 3'b101) ? 3'b001 : // Send R2
-                                            (SrcReg1 == 3'b110) ? 3'b010 : // Send R3
-                                            (SrcReg1 == 3'b111) ? 3'b011; // Send R4
+                            RF_OutASel = {1'b0, SrcReg1[1:0]};
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
@@ -596,19 +587,22 @@ module CPUSystem(
                         if (DestReg <= 3'b011) // If Destination register is from ARF
                         begin
                             MuxBSel    = 2'b00; 
-                            ARF_RegSel = (DestReg == 3'b000) ? 3'b100 : // Enable PC
-                                        (DestReg == 3'b001) ? 3'b010 : // Enable SP
-                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001; // Enable AR
+                            ARF_RegSel = (DestReg == 3'b000) ? (3'b100) : // Enable PC
+                                         (DestReg == 3'b001) ? (3'b010) : // Enable SP
+                                         (DestReg == 3'b010) ? (3'b001) : // Enable AR
+                                         (DestReg == 3'b011) ? (3'b001) : // Enable AR
+                                         3'b000;
 
                             ARF_FunSel = 2'b10; // Load
                         end 
                         else // If Destination register is from RF
                         begin
-                            MuxASel    = 2'b00; 
-                            RF_RegSel  = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
+                            MuxASel   = 2'b00; 
+                            RF_RegSel = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
                                         (DestReg == 3'b101) ? 4'b0100 : //Enable R2
                                         (DestReg == 3'b110) ? 4'b0010 : //Enable R3
-                                        (DestReg == 3'b111) ? 4'b0001; //Enable R4
+                                        (DestReg == 3'b111) ? 4'b0001 : //Enable R4
+                                        4'b0000;
 
                             RF_FunSel  = 3'b010; //Load
                         end
@@ -619,42 +613,36 @@ module CPUSystem(
                         // Select 2nd source and load it into S1
                         if(SrcReg2 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_OutCSel  = (SrcReg2 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg2 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg2 == 3'b010 || SrcReg2 == 3'b011) ? (2'b10); //Send AR
+                            ARF_OutCSel = SrcReg2[1:0];
+
                             MuxASel = 2'b01; // Send ARF to RF
                         end
                         else // If the source register is from RF
                         begin
-                            RF_OutBSel   = (SrcReg2 == 3'b100) ? 3'b000 : // Send R1
-                                            (SrcReg2 == 3'b101) ? 3'b001 : // Send R2
-                                            (SrcReg2 == 3'b110) ? 3'b010 : // Send R3
-                                            (SrcReg2 == 3'b111) ? 3'b011; // Send R4
                             ALU_FunSel = 5'b10001; // B->B (32bit)
                             MuxASel = 2'b00; // Send ALU out to RF
+
+                            RF_OutBSel = {1'b0, SrcReg2[1:0]};
                         end
 
                         RF_ScrSel = 4'b1000; // Enable S1  
                         RF_FunSel = 3'b010; // Load
                     end
 
-                    OR:begin
+                    ORR:begin
                         // Select 2nd source and load it into S1
                         if(SrcReg2 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_OutCSel  = (SrcReg2 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg2 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg2 == 3'b010 || SrcReg2 == 3'b011) ? (2'b10); //Send AR
+                            ARF_OutCSel = SrcReg2[1:0];
+
                             MuxASel = 2'b01; // Send ARF to RF
                         end
                         else // If the source register is from RF
                         begin
-                            RF_OutBSel   = (SrcReg2 == 3'b100) ? 3'b000 : // Send R1
-                                            (SrcReg2 == 3'b101) ? 3'b001 : // Send R2
-                                            (SrcReg2 == 3'b110) ? 3'b010 : // Send R3
-                                            (SrcReg2 == 3'b111) ? 3'b011; // Send R4
                             ALU_FunSel = 5'b10001; // B->B (32bit)
                             MuxASel = 2'b00; // Send ALU out to RF
+
+                            RF_OutBSel = {1'b0, SrcReg2[1:0]};
                         end
 
                         RF_ScrSel = 4'b1000; // Enable S1  
@@ -665,19 +653,16 @@ module CPUSystem(
                         // Select 2nd source and load it into S1
                         if(SrcReg2 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_OutCSel  = (SrcReg2 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg2 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg2 == 3'b010 || SrcReg2 == 3'b011) ? (2'b10); //Send AR
+                            ARF_OutCSel = SrcReg2[1:0];
+
                             MuxASel = 2'b01; // Send ARF to RF
                         end
                         else // If the source register is from RF
                         begin
-                            RF_OutBSel   = (SrcReg2 == 3'b100) ? 3'b000 : // Send R1
-                                            (SrcReg2 == 3'b101) ? 3'b001 : // Send R2
-                                            (SrcReg2 == 3'b110) ? 3'b010 : // Send R3
-                                            (SrcReg2 == 3'b111) ? 3'b011; // Send R4
                             ALU_FunSel = 5'b10001; // B->B (32bit)
                             MuxASel = 2'b00; // Send ALU out to RF
+
+                            RF_OutBSel = {1'b0, SrcReg2[1:0]};
                         end
 
                         RF_ScrSel = 4'b1000; // Enable S1  
@@ -688,19 +673,16 @@ module CPUSystem(
                         // Select 2nd source and load it into S1
                         if(SrcReg2 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_OutCSel  = (SrcReg2 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg2 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg2 == 3'b010 || SrcReg2 == 3'b011) ? (2'b10); //Send AR
+                            ARF_OutCSel = SrcReg2[1:0];
+
                             MuxASel = 2'b01; // Send ARF to RF
                         end
                         else // If the source register is from RF
                         begin
-                            RF_OutBSel   = (SrcReg2 == 3'b100) ? 3'b000 : // Send R1
-                                            (SrcReg2 == 3'b101) ? 3'b001 : // Send R2
-                                            (SrcReg2 == 3'b110) ? 3'b010 : // Send R3
-                                            (SrcReg2 == 3'b111) ? 3'b011; // Send R4
                             ALU_FunSel = 5'b10001; // B->B (32bit)
                             MuxASel = 2'b00; // Send ALU out to RF
+
+                            RF_OutBSel = {1'b0, SrcReg2[1:0]};
                         end
 
                         RF_ScrSel = 4'b1000; // Enable S1  
@@ -711,19 +693,16 @@ module CPUSystem(
                         // Select 2nd source and load it into S1
                         if(SrcReg2 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_OutCSel  = (SrcReg2 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg2 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg2 == 3'b010 || SrcReg2 == 3'b011) ? (2'b10); //Send AR
+                            ARF_OutCSel = SrcReg2[1:0];
+
                             MuxASel = 2'b01; // Send ARF to RF
                         end
                         else // If the source register is from RF
                         begin
-                            RF_OutBSel   = (SrcReg2 == 3'b100) ? 3'b000 : // Send R1
-                                            (SrcReg2 == 3'b101) ? 3'b001 : // Send R2
-                                            (SrcReg2 == 3'b110) ? 3'b010 : // Send R3
-                                            (SrcReg2 == 3'b111) ? 3'b011; // Send R4
                             ALU_FunSel = 5'b10001; // B->B (32bit)
                             MuxASel = 2'b00; // Send ALU out to RF
+
+                            RF_OutBSel = {1'b0, SrcReg2[1:0]};
                         end
 
                         RF_ScrSel = 4'b1000; // Enable S1  
@@ -734,19 +713,16 @@ module CPUSystem(
                         // Select 2nd source and load it into S1
                         if(SrcReg2 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_OutCSel  = (SrcReg2 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg2 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg2 == 3'b010 || SrcReg2 == 3'b011) ? (2'b10); //Send AR
+                            ARF_OutCSel = SrcReg2[1:0];
+
                             MuxASel = 2'b01; // Send ARF to RF
                         end
                         else // If the source register is from RF
                         begin
-                            RF_OutBSel   = (SrcReg2 == 3'b100) ? 3'b000 : // Send R1
-                                            (SrcReg2 == 3'b101) ? 3'b001 : // Send R2
-                                            (SrcReg2 == 3'b110) ? 3'b010 : // Send R3
-                                            (SrcReg2 == 3'b111) ? 3'b011; // Send R4
                             ALU_FunSel = 5'b10001; // B->B (32bit)
                             MuxASel = 2'b00; // Send ALU out to RF
+
+                            RF_OutBSel = {1'b0, SrcReg2[1:0]};
                         end
 
                         RF_ScrSel = 4'b1000; // Enable S1  
@@ -757,19 +733,16 @@ module CPUSystem(
                         // Select 2nd source and load it into S1
                         if(SrcReg2 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_OutCSel  = (SrcReg2 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg2 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg2 == 3'b010 || SrcReg2 == 3'b011) ? (2'b10); //Send AR
+                            ARF_OutCSel = SrcReg2[1:0];
+
                             MuxASel = 2'b01; // Send ARF to RF
                         end
                         else // If the source register is from RF
                         begin
-                            RF_OutBSel   = (SrcReg2 == 3'b100) ? 3'b000 : // Send R1
-                                            (SrcReg2 == 3'b101) ? 3'b001 : // Send R2
-                                            (SrcReg2 == 3'b110) ? 3'b010 : // Send R3
-                                            (SrcReg2 == 3'b111) ? 3'b011; // Send R4
                             ALU_FunSel = 5'b10001; // B->B (32bit)
                             MuxASel = 2'b00; // Send ALU out to RF
+
+                            RF_OutBSel = {1'b0, SrcReg2[1:0]};
                         end
 
                         RF_ScrSel = 4'b1000; // Enable S1  
@@ -781,16 +754,11 @@ module CPUSystem(
 
                         if(SrcReg1 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_OutCSel  = (SrcReg1 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg1 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg1 == 3'b010 || SrcReg1 == 3'b011) ? (2'b10); //Send AR 
+                            ARF_OutCSel = SrcReg1[1:0];
                         end
                         else // If the source register is from RF
                         begin
-                            RF_OutASel   = (SrcReg1 == 3'b100) ? 3'b000 : // Send R1
-                                            (SrcReg1 == 3'b101) ? 3'b001 : // Send R2
-                                            (SrcReg1 == 3'b110) ? 3'b010 : // Send R3
-                                            (SrcReg1 == 3'b111) ? 3'b011; // Send R4
+                            RF_OutASel = {1'b0, SrcReg1[1:0]};
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
@@ -801,19 +769,22 @@ module CPUSystem(
                         if (DestReg <= 3'b011) // If Destination register is from ARF
                         begin
                             MuxBSel    = 2'b00; 
-                            ARF_RegSel = (DestReg == 3'b000) ? 3'b100 : // Enable PC
-                                        (DestReg == 3'b001) ? 3'b010 : // Enable SP
-                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001; // Enable AR
+                            ARF_RegSel = (DestReg == 3'b000) ? (3'b100) : // Enable PC
+                                         (DestReg == 3'b001) ? (3'b010) : // Enable SP
+                                         (DestReg == 3'b010) ? (3'b001) : // Enable AR
+                                         (DestReg == 3'b011) ? (3'b001) : // Enable AR
+                                         3'b000;
 
                             ARF_FunSel = 2'b10; // Load
                         end 
                         else // If Destination register is from RF
                         begin
-                            MuxASel    = 2'b00; 
-                            RF_RegSel  = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
+                            MuxASel   = 2'b00; 
+                            RF_RegSel = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
                                         (DestReg == 3'b101) ? 4'b0100 : //Enable R2
                                         (DestReg == 3'b110) ? 4'b0010 : //Enable R3
-                                        (DestReg == 3'b111) ? 4'b0001; //Enable R4
+                                        (DestReg == 3'b111) ? 4'b0001 : //Enable R4
+                                        4'b0000;
 
                             RF_FunSel  = 3'b010; //Load
                         end
@@ -914,7 +885,7 @@ module CPUSystem(
                     
                     LDDRL: begin
                         /* Enable memory for read operation */
-                        ARF_OutDSel = 2'10; // Address = AR
+                        ARF_OutDSel = 2'b10; // Address = AR
                         Mem_CS = 0;
                         Mem_WR = 0;
                         
@@ -929,7 +900,7 @@ module CPUSystem(
                     
                     LDDRH: begin
                         /* Enable memory for read operation */
-                        ARF_OutDSel = 2'10; // Address = AR
+                        ARF_OutDSel = 2'b10; // Address = AR
                         Mem_CS = 0;
                         Mem_WR = 0;
                         
@@ -1054,19 +1025,19 @@ module CPUSystem(
                         if(SrcReg1 <= (3'b011)) // If the source register is from ARF
                         begin
 
-                            ARF_OutCSel  = (SrcReg1 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg1 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg1 == 3'b010 || SrcReg1 == 3'b011) ? (2'b10); //Send AR 
+                            ARF_OutCSel = SrcReg1[1:0];
                         end
                         else // If the source register is from RF
                         begin
+                        /*
                             RF_OutBSel   = (SrcReg1 == 3'b100) ? 3'b000 : // Send R1
                                             (SrcReg1 == 3'b101) ? 3'b001 : // Send R2
                                             (SrcReg1 == 3'b110) ? 3'b010 : // Send R3
                                             (SrcReg1 == 3'b111) ? 3'b011; // Send R4
-                            
-                            ALU_FunSel = 5'b10001; // B -> B (32bit)
+                        */
+                            RF_OutBSel = {1'b0, SrcReg1[1:0]};
 
+                            ALU_FunSel = 5'b10001; // B -> B (32bit)
                         end         
                     
                         //Load it
@@ -1074,20 +1045,22 @@ module CPUSystem(
                         begin
                             MuxBSel    = (RegSel <= 3'b011) ? 2'b01 : 2'b00; // if source is from ARF/ if source is from RF
 
-                            ARF_RegSel = (DestReg == 3'b000) ? 3'b100 : // Enable PC
-                                        (DestReg == 3'b001) ? 3'b010 : // Enable SP
-                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001; // Enable AR
+                            ARF_RegSel = (DestReg == 3'b000) ? (3'b100) : // Enable PC
+                                         (DestReg == 3'b001) ? (3'b010) : // Enable SP
+                                         (DestReg == 3'b010) ? (3'b001) : // Enable AR
+                                         (DestReg == 3'b011) ? (3'b001) : // Enable AR
+                                         3'b000;
 
                             ARF_FunSel = 2'b10; // Load
                         end 
                         else // If Destination register is from RF
                         begin
-                            MuxASel    = (RegSel <= 3'b011) ? 2'b01 : 2'b00; // if source is from ARF/ if source is from RF
-
-                            RF_RegSel  = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
+                            MuxASel   = (RegSel <= 3'b011) ? 2'b01 : 2'b00; // if source is from ARF/ if source is from RF
+                            RF_RegSel = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
                                         (DestReg == 3'b101) ? 4'b0100 : //Enable R2
                                         (DestReg == 3'b110) ? 4'b0010 : //Enable R3
-                                        (DestReg == 3'b111) ? 4'b0001; //Enable R4
+                                        (DestReg == 3'b111) ? 4'b0001 : //Enable R4
+                                        4'b0000;
 
                             RF_FunSel  = 3'b010; //Load
 
@@ -1101,19 +1074,19 @@ module CPUSystem(
                         if(SrcReg1 <= (3'b011)) // If the source register is from ARF
                         begin
 
-                            ARF_OutCSel  = (SrcReg1 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg1 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg1 == 3'b010 || SrcReg1 == 3'b011) ? (2'b10); //Send AR 
+                            ARF_OutCSel = SrcReg1[1:0];
                         end
                         else // If the source register is from RF
                         begin
+                        /*
                             RF_OutBSel   = (SrcReg1 == 3'b100) ? 3'b000 : // Send R1
                                             (SrcReg1 == 3'b101) ? 3'b001 : // Send R2
                                             (SrcReg1 == 3'b110) ? 3'b010 : // Send R3
                                             (SrcReg1 == 3'b111) ? 3'b011; // Send R4
-                            
-                            ALU_FunSel = 5'b10001; // B -> B (32bit)
+                        */
+                            RF_OutBSel = {1'b0, SrcReg1[1:0]};
 
+                            ALU_FunSel = 5'b10001; // B -> B (32bit)
                         end         
                     
                         //Load it
@@ -1121,20 +1094,22 @@ module CPUSystem(
                         begin
                             MuxBSel    = (RegSel <= 3'b011) ? 2'b01 : 2'b00; // if source is from ARF/ if source is from RF
 
-                            ARF_RegSel = (DestReg == 3'b000) ? 3'b100 : // Enable PC
-                                        (DestReg == 3'b001) ? 3'b010 : // Enable SP
-                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001; // Enable AR
+                            ARF_RegSel = (DestReg == 3'b000) ? (3'b100) : // Enable PC
+                                         (DestReg == 3'b001) ? (3'b010) : // Enable SP
+                                         (DestReg == 3'b010) ? (3'b001) : // Enable AR
+                                         (DestReg == 3'b011) ? (3'b001) : // Enable AR
+                                         3'b000;
 
                             ARF_FunSel = 2'b10; // Load
                         end 
                         else // If Destination register is from RF
                         begin
-                            MuxASel    = (RegSel <= 3'b011) ? 2'b01 : 2'b00; // if source is from ARF/ if source is from RF
-
-                            RF_RegSel  = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
+                            MuxASel   = (RegSel <= 3'b011) ? 2'b01 : 2'b00; // if source is from ARF/ if source is from RF
+                            RF_RegSel = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
                                         (DestReg == 3'b101) ? 4'b0100 : //Enable R2
                                         (DestReg == 3'b110) ? 4'b0010 : //Enable R3
-                                        (DestReg == 3'b111) ? 4'b0001; //Enable R4
+                                        (DestReg == 3'b111) ? 4'b0001 : //Enable R4
+                                        4'b0000;
 
                             RF_FunSel  = 3'b010; //Load
                         end
@@ -1147,16 +1122,11 @@ module CPUSystem(
 
                         if(SrcReg1 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_OutCSel  = (SrcReg1 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg1 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg1 == 3'b010 || SrcReg1 == 3'b011) ? (2'b10); //Send AR 
+                            ARF_OutCSel = SrcReg1[1:0];
                         end
                         else // If the source register is from RF
                         begin
-                            RF_OutASel   = (SrcReg1 == 3'b100) ? 3'b000 : // Send R1
-                                            (SrcReg1 == 3'b101) ? 3'b001 : // Send R2
-                                            (SrcReg1 == 3'b110) ? 3'b010 : // Send R3
-                                            (SrcReg1 == 3'b111) ? 3'b011; // Send R4
+                            RF_OutASel = {1'b0, SrcReg1[1:0]};
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
@@ -1168,40 +1138,38 @@ module CPUSystem(
                         if (DestReg <= 3'b011) // If Destination register is from ARF
                         begin
                             MuxBSel    = 2'b00; 
-                            ARF_RegSel = (DestReg == 3'b000) ? 3'b100 : // Enable PC
-                                        (DestReg == 3'b001) ? 3'b010 : // Enable SP
-                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001; // Enable AR
+                            ARF_RegSel = (DestReg == 3'b000) ? (3'b100) : // Enable PC
+                                         (DestReg == 3'b001) ? (3'b010) : // Enable SP
+                                         (DestReg == 3'b010) ? (3'b001) : // Enable AR
+                                         (DestReg == 3'b011) ? (3'b001) : // Enable AR
+                                         3'b000;
 
                             ARF_FunSel = 2'b10; // Load
                         end 
                         else // If Destination register is from RF
                         begin
-                            MuxASel    = 2'b00; 
-                            RF_RegSel  = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
+                            MuxASel   = 2'b00; 
+                            RF_RegSel = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
                                         (DestReg == 3'b101) ? 4'b0100 : //Enable R2
                                         (DestReg == 3'b110) ? 4'b0010 : //Enable R3
-                                        (DestReg == 3'b111) ? 4'b0001; //Enable R4
+                                        (DestReg == 3'b111) ? 4'b0001 : //Enable R4
+                                        4'b0000;
 
                             RF_FunSel  = 3'b010; //Load
                         end
                         T_Reset = 1; // reset T
                     end
 
-                    OR:begin
+                    ORR:begin
                         // 1st source selection and OR 32bit
 
                         if(SrcReg1 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_OutCSel  = (SrcReg1 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg1 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg1 == 3'b010 || SrcReg1 == 3'b011) ? (2'b10); //Send AR 
+                            ARF_OutCSel = SrcReg1[1:0];
                         end
                         else // If the source register is from RF
                         begin
-                            RF_OutASel   = (SrcReg1 == 3'b100) ? 3'b000 : // Send R1
-                                            (SrcReg1 == 3'b101) ? 3'b001 : // Send R2
-                                            (SrcReg1 == 3'b110) ? 3'b010 : // Send R3
-                                            (SrcReg1 == 3'b111) ? 3'b011; // Send R4
+                            RF_OutASel = {1'b0, SrcReg1[1:0]};
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
@@ -1213,19 +1181,22 @@ module CPUSystem(
                         if (DestReg <= 3'b011) // If Destination register is from ARF
                         begin
                             MuxBSel    = 2'b00; 
-                            ARF_RegSel = (DestReg == 3'b000) ? 3'b100 : // Enable PC
-                                        (DestReg == 3'b001) ? 3'b010 : // Enable SP
-                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001; // Enable AR
+                            ARF_RegSel = (DestReg == 3'b000) ? (3'b100) : // Enable PC
+                                         (DestReg == 3'b001) ? (3'b010) : // Enable SP
+                                         (DestReg == 3'b010) ? (3'b001) : // Enable AR
+                                         (DestReg == 3'b011) ? (3'b001) : // Enable AR
+                                         3'b000;
 
                             ARF_FunSel = 2'b10; // Load
                         end 
                         else // If Destination register is from RF
                         begin
-                            MuxASel    = 2'b00; 
-                            RF_RegSel  = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
+                            MuxASel   = 2'b00; 
+                            RF_RegSel = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
                                         (DestReg == 3'b101) ? 4'b0100 : //Enable R2
                                         (DestReg == 3'b110) ? 4'b0010 : //Enable R3
-                                        (DestReg == 3'b111) ? 4'b0001; //Enable R4
+                                        (DestReg == 3'b111) ? 4'b0001 : //Enable R4
+                                        4'b0000;
 
                             RF_FunSel  = 3'b010; //Load
                         end
@@ -1237,16 +1208,11 @@ module CPUSystem(
 
                         if(SrcReg1 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_OutCSel  = (SrcReg1 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg1 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg1 == 3'b010 || SrcReg1 == 3'b011) ? (2'b10); //Send AR 
+                            ARF_OutCSel = SrcReg1[1:0];
                         end
                         else // If the source register is from RF
                         begin
-                            RF_OutASel   = (SrcReg1 == 3'b100) ? 3'b000 : // Send R1
-                                            (SrcReg1 == 3'b101) ? 3'b001 : // Send R2
-                                            (SrcReg1 == 3'b110) ? 3'b010 : // Send R3
-                                            (SrcReg1 == 3'b111) ? 3'b011; // Send R4
+                            RF_OutASel = {1'b0, SrcReg1[1:0]};
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
@@ -1258,19 +1224,22 @@ module CPUSystem(
                         if (DestReg <= 3'b011) // If Destination register is from ARF
                         begin
                             MuxBSel    = 2'b00; 
-                            ARF_RegSel = (DestReg == 3'b000) ? 3'b100 : // Enable PC
-                                        (DestReg == 3'b001) ? 3'b010 : // Enable SP
-                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001; // Enable AR
+                            ARF_RegSel = (DestReg == 3'b000) ? (3'b100) : // Enable PC
+                                         (DestReg == 3'b001) ? (3'b010) : // Enable SP
+                                         (DestReg == 3'b010) ? (3'b001) : // Enable AR
+                                         (DestReg == 3'b011) ? (3'b001) : // Enable AR
+                                         3'b000;
 
                             ARF_FunSel = 2'b10; // Load
                         end 
                         else // If Destination register is from RF
                         begin
-                            MuxASel    = 2'b00; 
-                            RF_RegSel  = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
+                            MuxASel   = 2'b00; 
+                            RF_RegSel = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
                                         (DestReg == 3'b101) ? 4'b0100 : //Enable R2
                                         (DestReg == 3'b110) ? 4'b0010 : //Enable R3
-                                        (DestReg == 3'b111) ? 4'b0001; //Enable R4
+                                        (DestReg == 3'b111) ? 4'b0001 : //Enable R4
+                                        4'b0000;
 
                             RF_FunSel  = 3'b010; //Load
                         end
@@ -1282,16 +1251,11 @@ module CPUSystem(
 
                         if(SrcReg1 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_OutCSel  = (SrcReg1 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg1 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg1 == 3'b010 || SrcReg1 == 3'b011) ? (2'b10); //Send AR 
+                            ARF_OutCSel = SrcReg1[1:0];
                         end
                         else // If the source register is from RF
                         begin
-                            RF_OutASel   = (SrcReg1 == 3'b100) ? 3'b000 : // Send R1
-                                            (SrcReg1 == 3'b101) ? 3'b001 : // Send R2
-                                            (SrcReg1 == 3'b110) ? 3'b010 : // Send R3
-                                            (SrcReg1 == 3'b111) ? 3'b011; // Send R4
+                            RF_OutASel = {1'b0, SrcReg1[1:0]};
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
@@ -1303,19 +1267,22 @@ module CPUSystem(
                         if (DestReg <= 3'b011) // If Destination register is from ARF
                         begin
                             MuxBSel    = 2'b00; 
-                            ARF_RegSel = (DestReg == 3'b000) ? 3'b100 : // Enable PC
-                                        (DestReg == 3'b001) ? 3'b010 : // Enable SP
-                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001; // Enable AR
+                            ARF_RegSel = (DestReg == 3'b000) ? (3'b100) : // Enable PC
+                                         (DestReg == 3'b001) ? (3'b010) : // Enable SP
+                                         (DestReg == 3'b010) ? (3'b001) : // Enable AR
+                                         (DestReg == 3'b011) ? (3'b001) : // Enable AR
+                                         3'b000;
 
                             ARF_FunSel = 2'b10; // Load
                         end 
                         else // If Destination register is from RF
                         begin
-                            MuxASel    = 2'b00; 
-                            RF_RegSel  = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
+                            MuxASel   = 2'b00; 
+                            RF_RegSel = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
                                         (DestReg == 3'b101) ? 4'b0100 : //Enable R2
                                         (DestReg == 3'b110) ? 4'b0010 : //Enable R3
-                                        (DestReg == 3'b111) ? 4'b0001; //Enable R4
+                                        (DestReg == 3'b111) ? 4'b0001 : //Enable R4
+                                        4'b0000;
 
                             RF_FunSel  = 3'b010; //Load
                         end
@@ -1327,16 +1294,11 @@ module CPUSystem(
 
                         if(SrcReg1 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_OutCSel  = (SrcReg1 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg1 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg1 == 3'b010 || SrcReg1 == 3'b011) ? (2'b10); //Send AR 
+                            ARF_OutCSel = SrcReg1[1:0];
                         end
                         else // If the source register is from RF
                         begin
-                            RF_OutASel   = (SrcReg1 == 3'b100) ? 3'b000 : // Send R1
-                                            (SrcReg1 == 3'b101) ? 3'b001 : // Send R2
-                                            (SrcReg1 == 3'b110) ? 3'b010 : // Send R3
-                                            (SrcReg1 == 3'b111) ? 3'b011; // Send R4
+                            RF_OutASel = {1'b0, SrcReg1[1:0]};
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
@@ -1348,19 +1310,22 @@ module CPUSystem(
                         if (DestReg <= 3'b011) // If Destination register is from ARF
                         begin
                             MuxBSel    = 2'b00; 
-                            ARF_RegSel = (DestReg == 3'b000) ? 3'b100 : // Enable PC
-                                        (DestReg == 3'b001) ? 3'b010 : // Enable SP
-                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001; // Enable AR
+                            ARF_RegSel = (DestReg == 3'b000) ? (3'b100) : // Enable PC
+                                         (DestReg == 3'b001) ? (3'b010) : // Enable SP
+                                         (DestReg == 3'b010) ? (3'b001) : // Enable AR
+                                         (DestReg == 3'b011) ? (3'b001) : // Enable AR
+                                         3'b000;
 
                             ARF_FunSel = 2'b10; // Load
                         end 
                         else // If Destination register is from RF
                         begin
-                            MuxASel    = 2'b00; 
-                            RF_RegSel  = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
+                            MuxASel   = 2'b00; 
+                            RF_RegSel = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
                                         (DestReg == 3'b101) ? 4'b0100 : //Enable R2
                                         (DestReg == 3'b110) ? 4'b0010 : //Enable R3
-                                        (DestReg == 3'b111) ? 4'b0001; //Enable R4
+                                        (DestReg == 3'b111) ? 4'b0001 : //Enable R4
+                                        4'b0000;
 
                             RF_FunSel  = 3'b010; //Load
                         end
@@ -1372,16 +1337,11 @@ module CPUSystem(
 
                         if(SrcReg1 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_OutCSel  = (SrcReg1 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg1 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg1 == 3'b010 || SrcReg1 == 3'b011) ? (2'b10); //Send AR 
+                            ARF_OutCSel = SrcReg1[1:0];
                         end
                         else // If the source register is from RF
                         begin
-                            RF_OutASel   = (SrcReg1 == 3'b100) ? 3'b000 : // Send R1
-                                            (SrcReg1 == 3'b101) ? 3'b001 : // Send R2
-                                            (SrcReg1 == 3'b110) ? 3'b010 : // Send R3
-                                            (SrcReg1 == 3'b111) ? 3'b011; // Send R4
+                            RF_OutASel = {1'b0, SrcReg1[1:0]};
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
@@ -1393,19 +1353,22 @@ module CPUSystem(
                         if (DestReg <= 3'b011) // If Destination register is from ARF
                         begin
                             MuxBSel    = 2'b00; 
-                            ARF_RegSel = (DestReg == 3'b000) ? 3'b100 : // Enable PC
-                                        (DestReg == 3'b001) ? 3'b010 : // Enable SP
-                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001; // Enable AR
+                            ARF_RegSel = (DestReg == 3'b000) ? (3'b100) : // Enable PC
+                                         (DestReg == 3'b001) ? (3'b010) : // Enable SP
+                                         (DestReg == 3'b010) ? (3'b001) : // Enable AR
+                                         (DestReg == 3'b011) ? (3'b001) : // Enable AR
+                                         3'b000;
 
                             ARF_FunSel = 2'b10; // Load
                         end 
                         else // If Destination register is from RF
                         begin
-                            MuxASel    = 2'b00; 
-                            RF_RegSel  = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
+                            MuxASel   = 2'b00; 
+                            RF_RegSel = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
                                         (DestReg == 3'b101) ? 4'b0100 : //Enable R2
                                         (DestReg == 3'b110) ? 4'b0010 : //Enable R3
-                                        (DestReg == 3'b111) ? 4'b0001; //Enable R4
+                                        (DestReg == 3'b111) ? 4'b0001 : //Enable R4
+                                        4'b0000;
 
                             RF_FunSel  = 3'b010; //Load
                         end
@@ -1417,16 +1380,11 @@ module CPUSystem(
 
                         if(SrcReg1 <= (3'b011)) // If the source register is from ARF
                         begin
-                            ARF_OutCSel  = (SrcReg1 == 3'b000) ? (2'b00) : // Send PC
-                                            (SrcReg1 == 3'b001) ? (2'b01) : // Send SP
-                                            (SrcReg1 == 3'b010 || SrcReg1 == 3'b011) ? (2'b10); //Send AR 
+                            ARF_OutCSel = SrcReg1[1:0];
                         end
                         else // If the source register is from RF
                         begin
-                            RF_OutASel   = (SrcReg1 == 3'b100) ? 3'b000 : // Send R1
-                                            (SrcReg1 == 3'b101) ? 3'b001 : // Send R2
-                                            (SrcReg1 == 3'b110) ? 3'b010 : // Send R3
-                                            (SrcReg1 == 3'b111) ? 3'b011; // Send R4
+                            RF_OutASel = {1'b0, SrcReg1[1:0]};
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
@@ -1438,19 +1396,22 @@ module CPUSystem(
                         if (DestReg <= 3'b011) // If Destination register is from ARF
                         begin
                             MuxBSel    = 2'b00; 
-                            ARF_RegSel = (DestReg == 3'b000) ? 3'b100 : // Enable PC
-                                        (DestReg == 3'b001) ? 3'b010 : // Enable SP
-                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001; // Enable AR
+                            ARF_RegSel = (DestReg == 3'b000) ? (3'b100) : // Enable PC
+                                         (DestReg == 3'b001) ? (3'b010) : // Enable SP
+                                         (DestReg == 3'b010) ? (3'b001) : // Enable AR
+                                         (DestReg == 3'b011) ? (3'b001) : // Enable AR
+                                         3'b000;
 
                             ARF_FunSel = 2'b10; // Load
                         end 
                         else // If Destination register is from RF
                         begin
-                            MuxASel    = 2'b00; 
-                            RF_RegSel  = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
+                            MuxASel   = 2'b00; 
+                            RF_RegSel = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
                                         (DestReg == 3'b101) ? 4'b0100 : //Enable R2
                                         (DestReg == 3'b110) ? 4'b0010 : //Enable R3
-                                        (DestReg == 3'b111) ? 4'b0001; //Enable R4
+                                        (DestReg == 3'b111) ? 4'b0001 : //Enable R4
+                                        4'b0000;
 
                             RF_FunSel  = 3'b010; //Load
                         end
@@ -1480,7 +1441,7 @@ module CPUSystem(
                         if (SrcReg1[2] == 0) begin
                             RF_OutBSel = 3'b100;
                         end else begin
-                            RF_OutBSel = {0, SrcReg1[1:0]};
+                            RF_OutBSel = {1'b0, SrcReg1[1:0]};
                         end
                         
                         // Enable memory for writing
@@ -1494,14 +1455,14 @@ module CPUSystem(
                         
                         // Increment AR
                         ARF_RegSel = 3'b001;
-                        ARF_FunSel = 2'01;
+                        ARF_FunSel = 2'b01;
                     end
                     
                     LDAL: begin
                         /* Load from Memory to DR, then from DR to Rx */
                         
                         /* Enable memory for read operation */
-                        ARF_OutDSel = 2'10; // Address = AR
+                        ARF_OutDSel = 2'b10; // Address = AR
                         Mem_CS = 0;
                         Mem_WR = 0;
                         
@@ -1518,7 +1479,7 @@ module CPUSystem(
                         /* Load from Memory to DR, then from DR to Rx */
                         
                         /* Enable memory for read operation */
-                        ARF_OutDSel = 2'10; // Address = AR
+                        ARF_OutDSel = 2'b10; // Address = AR
                         Mem_CS = 0;
                         Mem_WR = 0;
                         
@@ -1547,7 +1508,7 @@ module CPUSystem(
                     
                     LDDRL: begin
                         /* Enable memory for read operation */
-                        ARF_OutDSel = 2'10; // Address = AR
+                        ARF_OutDSel = 2'b10; // Address = AR
                         Mem_CS = 0;
                         Mem_WR = 0;
                         
@@ -1560,7 +1521,7 @@ module CPUSystem(
                     
                     LDDRH: begin
                         /* Enable memory for read operation */
-                        ARF_OutDSel = 2'10; // Address = AR
+                        ARF_OutDSel = 2'b10; // Address = AR
                         Mem_CS = 0;
                         Mem_WR = 0;
                         
@@ -1597,7 +1558,9 @@ module CPUSystem(
                         RF_RegSel = (RegSel == 2'b00) ? (4'b1000) : // enable R1
                                     (RegSel == 2'b01) ? (4'b0100) : // enable R2
                                     (RegSel == 2'b10) ? (4'b0010) : // enable R3
-                                    (RegSel == 2'b11) ? (4'b0001); // enable R4
+                                    (RegSel == 2'b11) ? (4'b0001) : // enable R4
+                                    4'b0000;
+
                         RF_FunSel = 3'b010; // load to RF
 
                         T_Reset = 1; // reset T
@@ -1697,14 +1660,14 @@ module CPUSystem(
                         
                         // Increment AR
                         ARF_RegSel = 3'b001;
-                        ARF_FunSel = 2'01;
+                        ARF_FunSel = 2'b01;
                     end
                     
                     LDAL: begin
                         /* Load from Memory to DR, then from DR to Rx */
                         
                         /* Enable memory for read operation */
-                        ARF_OutDSel = 2'10; // Address = AR
+                        ARF_OutDSel = 2'b10; // Address = AR
                         Mem_CS = 0;
                         Mem_WR = 0;
                         
@@ -1717,7 +1680,7 @@ module CPUSystem(
                         /* Load from Memory to DR, then from DR to Rx */
                         
                         /* Enable memory for read operation */
-                        ARF_OutDSel = 2'10; // Address = AR
+                        ARF_OutDSel = 2'b10; // Address = AR
                         Mem_CS = 0;
                         Mem_WR = 0;
                         
@@ -1746,7 +1709,7 @@ module CPUSystem(
                     
                     LDDRH: begin
                         /* Enable memory for read operation */
-                        ARF_OutDSel = 2'10; // Address = AR
+                        ARF_OutDSel = 2'b10; // Address = AR
                         Mem_CS = 0;
                         Mem_WR = 0;
                         
@@ -1824,7 +1787,7 @@ module CPUSystem(
                         
                         // Increment AR
                         ARF_RegSel = 3'b001;
-                        ARF_FunSel = 2'01;
+                        ARF_FunSel = 2'b01;
                     end
                     
                     LDAL: begin
@@ -1847,7 +1810,7 @@ module CPUSystem(
                         /* Load from Memory to DR, then from DR to Rx */
                         
                         /* Enable memory for read operation */
-                        ARF_OutDSel = 2'10; // Address = AR
+                        ARF_OutDSel = 2'b10; // Address = AR
                         Mem_CS = 0;
                         Mem_WR = 0;
                         
@@ -1876,7 +1839,7 @@ module CPUSystem(
                     
                     LDDRH: begin
                         /* Enable memory for read operation */
-                        ARF_OutDSel = 2'10; // Address = AR
+                        ARF_OutDSel = 2'b10; // Address = AR
                         Mem_CS = 0;
                         Mem_WR = 0;
                         
@@ -1910,7 +1873,9 @@ module CPUSystem(
                         RF_RegSel = (RegSel == 2'b00) ? (4'b1000) : // enable R1
                                     (RegSel == 2'b01) ? (4'b0100) : // enable R2
                                     (RegSel == 2'b10) ? (4'b0010) : // enable R3
-                                    (RegSel == 2'b11) ? (4'b0001); // enable R4
+                                    (RegSel == 2'b11) ? (4'b0001) : // enable R4
+                                    4'b0000;
+
                         RF_FunSel = 3'b010; // load to RF
 
                         // SP <- SP - 1
@@ -1966,7 +1931,7 @@ module CPUSystem(
                         /* Load from Memory to DR, then from DR to Rx */
                         
                         /* Enable memory for read operation */
-                        ARF_OutDSel = 2'10; // Address = AR
+                        ARF_OutDSel = 2'b10; // Address = AR
                         Mem_CS = 0;
                         Mem_WR = 0;
                         
