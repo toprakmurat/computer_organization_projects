@@ -247,6 +247,27 @@ module CPUSystem(
                         ARF_RegSel = 3'b010; // Enable SP
                         ARF_FunSel = 2'b01; // Increment SP
                     end
+
+                    PSHL: begin
+                        ARF_OutDSel = 2'b01; // send SP to Memory as an Address
+
+                        Mem_CS = 0; // Enable Memory
+                        Mem_WR = 0; // Read from Memory
+
+                        // Send selected Rx to ALU
+                        RF_OutBSel = {1'b0, RegSel}; // select Rx
+
+                        // Send ALU input to ALU output without any change
+                        ALU_FunSel = 5'b00001; // B -> B (16bit)
+                        
+                        MuxCSel = 2'b00; // ALUOut (7-0) -> Memory
+
+                        // SP <- SP + 1
+                        ARF_RegSel = 3'b010; // Enable SP
+                        ARF_FunSel = 2'b01; // Increment SP
+
+                    end
+
                     MOVL: begin
                         /* Select the appropriate register based on the RegSel input*/
                         RF_RegSel =  (RegSel == 2'b00) ? (4'b1000) :
@@ -414,6 +435,25 @@ module CPUSystem(
                         DR_E = 1; // Enable Data Register
                         DR_FunSel = 2'b10; // Left shift DR and load it (0x0000IIYY) (Y = new inputs)
                     end
+
+                    PSHL: begin
+                        ARF_OutDSel = 2'b01; // send SP to Memory as an Address
+
+                        Mem_CS = 0; // Enable Memory
+                        Mem_WR = 1; // Write to Memory
+
+                        // Send selected Rx to ALU
+                        RF_OutBSel = {1'b0, RegSel}; // select Rx
+
+                        // Send ALU input to ALU output without any change
+                        ALU_FunSel = 5'b00001; // B -> B (16bit)
+                        
+                        MuxCSel = 2'b01; // ALUOut (15-8) -> Memory
+
+                        // SP <- SP - 1
+                        ARF_RegSel = 3'b010; // Enable SP
+                        ARF_FunSel = 2'b00; // Decrement SP
+                    end
                     LDARL: begin
                         DR_FunSel = 2'b10; // DR is fully loaded
                         
@@ -557,6 +597,14 @@ module CPUSystem(
                                     (RegSel == 2'b10) ? (4'b0010) : // enable R3
                                     (RegSel == 2'b11) ? (4'b0001); // enable R4
                         RF_FunSel = 3'b010; // load to RF
+
+                        T_Reset = 1; // reset T
+                    end
+
+                    PSHL:begin
+                        // SP <- SP - 1
+                        ARF_RegSel = 3'b010; // Enable SP
+                        ARF_FunSel = 2'b00; // Decrement SP
 
                         T_Reset = 1; // reset T
                     end
