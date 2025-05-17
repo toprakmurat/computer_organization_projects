@@ -313,6 +313,27 @@ module CPUSystem(
                         ARF_RegSel = 3'b010; // Enable SP
                         ARF_FunSel = 2'b01; // Increment SP
                     end
+
+                    INC:begin
+                        // Source selection and incrementation
+                        if(SrcReg1 <= (3'b011)) // If the source register is from ARF
+                        begin
+                            ARF_RegSel =(SrcReg1 == 3'b000) ? (3'b100) : // Enable PC
+                                        (SrcReg1 == 3'b001) ? (3'b010) : // Enable SP
+                                        (SrcReg1 == 3'b010 || SrcReg1 == 3'b011) ? (3'b001); // Enable AR
+
+                            ARF_FunSel = 2'b01; // Increment
+                        end
+                        else // If the source register is from RF
+                        begin
+                            RF_RegSel = (SrcReg1 == 3'b100) ? (4'b1000) : // Enable R1
+                                        (SrcReg1 == 3'b101) ? (4'b0100) : // Enable R2
+                                        (SrcReg1 == 3'b110) ? (4'b0010) : // Enable R3
+                                        (SrcReg1 == 3'b111) ? (4'b0001); // Enable R4
+                                          
+                            RF_FunSel = 3'b001 ; // increment
+                        end         
+                    end
                     MOVL: begin
                         /* Select the appropriate register based on the RegSel input*/
                         RF_RegSel =  (RegSel == 2'b00) ? (4'b1000) :
@@ -543,6 +564,52 @@ module CPUSystem(
                         DR_FunSel = 2'b10; // Left shift DR and load it (0x0000IIYY) (Y = new inputs)
                     end
 
+                    INC:begin
+                        // Send selected register to selected destination
+                        if(SrcReg1 <= (3'b011)) // If the source register is from ARF
+                        begin
+
+                            ARF_OutCSel  = (SrcReg1 == 3'b000) ? (2'b00) : // Send PC
+                                            (SrcReg1 == 3'b001) ? (2'b01) : // Send SP
+                                            (SrcReg1 == 3'b010 || SrcReg1 == 3'b011) ? (2'b10); //Send AR 
+                        end
+                        else // If the source register is from RF
+                        begin
+                            RF_OutBSel   = (SrcReg1 == 3'b100) ? 3'b000 : // Send R1
+                                            (SrcReg1 == 3'b101) ? 3'b001 : // Send R2
+                                            (SrcReg1 == 3'b110) ? 3'b010 : // Send R3
+                                            (SrcReg1 == 3'b111) ? 3'b011; // Send R4
+                            
+                            ALU_FunSel = 5'b10001; // B -> B (32bit)
+
+                        end         
+                    
+                        //Load it
+                        if (DestReg <= 3'b011) // If Destination register is from ARF
+                        begin
+                            MuxBSel    = (RegSel <= 3'b011) ? 2'b01 : 2'b00; // if source is from ARF/ if source is from RF
+
+                            ARF_RegSel = (DestReg == 3'b000) ? 3'b100 : // Enable PC
+                                        (DestReg == 3'b001) ? 3'b010 : // Enable SP
+                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001; // Enable AR
+
+                            ARF_FunSel = 2'b10; // Load
+                        end 
+                        else // If Destination register is from RF
+                        begin
+                            MuxASel    = (RegSel <= 3'b011) ? 2'b01 : 2'b00; // if source is from ARF/ if source is from RF
+
+                            RF_RegSel  = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
+                                        (DestReg == 3'b101) ? 4'b0100 : //Enable R2
+                                        (DestReg == 3'b110) ? 4'b0010 : //Enable R3
+                                        (DestReg == 3'b111) ? 4'b0001; //Enable R4
+
+                            RF_FunSel  = 3'b010; //Load
+
+                            T_Reset = 1; // reset T
+                        end
+
+                    end
                     LDARL: begin
                         DR_FunSel = 2'b10; // DR is fully loaded
                         
