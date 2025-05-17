@@ -399,6 +399,49 @@ module CPUSystem(
                         end
                         T_Reset = 1; // reset T    
                     end
+                    LSR:begin
+                        // Source selection and lsr 32 bit
+
+                        if(SrcReg1 <= (3'b011)) // If the source register is from ARF
+                        begin
+                            ARF_OutCSel  = (SrcReg1 == 3'b000) ? (2'b00) : // Send PC
+                                            (SrcReg1 == 3'b001) ? (2'b01) : // Send SP
+                                            (SrcReg1 == 3'b010 || SrcReg1 == 3'b011) ? (2'b10); //Send AR 
+                        end
+                        else // If the source register is from RF
+                        begin
+                            RF_OutASel   = (SrcReg1 == 3'b100) ? 3'b000 : // Send R1
+                                            (SrcReg1 == 3'b101) ? 3'b001 : // Send R2
+                                            (SrcReg1 == 3'b110) ? 3'b010 : // Send R3
+                                            (SrcReg1 == 3'b111) ? 3'b011; // Send R4
+                        end  
+
+                        MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
+
+                        ALU_FunSel = 5'b11100; // lsr A (32bit)
+        
+                        //Load it
+                        if (DestReg <= 3'b011) // If Destination register is from ARF
+                        begin
+                            MuxBSel    = 2'b00; 
+                            ARF_RegSel = (DestReg == 3'b000) ? 3'b100 : // Enable PC
+                                        (DestReg == 3'b001) ? 3'b010 : // Enable SP
+                                        (DestReg == 3'b010 | DestReg == 3'b011) ? 3'b001; // Enable AR
+
+                            ARF_FunSel = 2'b10; // Load
+                        end 
+                        else // If Destination register is from RF
+                        begin
+                            MuxASel    = 2'b00; 
+                            RF_RegSel  = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
+                                        (DestReg == 3'b101) ? 4'b0100 : //Enable R2
+                                        (DestReg == 3'b110) ? 4'b0010 : //Enable R3
+                                        (DestReg == 3'b111) ? 4'b0001; //Enable R4
+
+                            RF_FunSel  = 3'b010; //Load
+                        end
+                        T_Reset = 1; // reset T 
+                    end
                     MOVL: begin
                         /* Select the appropriate register based on the RegSel input*/
                         RF_RegSel =  (RegSel == 2'b00) ? (4'b1000) :
