@@ -1836,9 +1836,9 @@ module CPUSystem(
                         DR_E = 1; // Enable Data Register
                         DR_FunSel = 2'b10; //Left shift DR and load it (0xIIYYXXZZ) (Z = new inputs)
 
-                        // SP <- SP - 1
+                        // SP <- SP + 1
                         ARF_RegSel = 3'b010; // Enable SP
-                        ARF_FunSel = 2'b01; // Decrement SP
+                        ARF_FunSel = 2'b01; // Increment SP
                     end
 
                     PSHH:begin
@@ -2006,10 +2006,6 @@ module CPUSystem(
                                     4'b0000;
 
                         RF_FunSel = 3'b010; // load to RF
-
-                        // SP <- SP - 1
-                        ARF_RegSel = 3'b010; // Enable SP
-                        ARF_FunSel = 2'b01; // Decrement SP
 
                         T_Reset = 1; // reset T
                     end
