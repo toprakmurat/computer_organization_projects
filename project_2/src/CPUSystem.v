@@ -270,9 +270,9 @@ module CPUSystem(
                         
                         MuxCSel = 2'b00; // ALUOut (7-0) -> Memory
 
-                        // SP <- SP + 1
+                        // SP <- SP - 1
                         ARF_RegSel = 3'b010; // Enable SP
-                        ARF_FunSel = 2'b01; // Increment SP
+                        ARF_FunSel = 2'b00; // Decrement SP
 
                     end
 
@@ -971,6 +971,8 @@ module CPUSystem(
                         // SP <- SP - 1
                         ARF_RegSel = 3'b010; // Enable SP
                         ARF_FunSel = 2'b00; // Decrement SP
+
+                        T_Reset = 1; // reset T
                     end
 
                     POPH:begin
@@ -985,6 +987,7 @@ module CPUSystem(
                         // SP <- SP + 1
                         ARF_RegSel = 3'b010; // Enable SP
                         ARF_FunSel = 2'b01; // Increment SP
+                        
                     end
 
                     PSHH:begin
@@ -1496,14 +1499,6 @@ module CPUSystem(
                                     4'b0000;
 
                         RF_FunSel = 3'b010; // load to RF
-
-                        T_Reset = 1; // reset T
-                    end
-
-                    PSHL:begin
-                        // SP <- SP - 1
-                        ARF_RegSel = 3'b010; // Enable SP
-                        ARF_FunSel = 2'b00; // Decrement SP
 
                         T_Reset = 1; // reset T
                     end
