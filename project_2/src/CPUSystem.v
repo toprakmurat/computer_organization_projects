@@ -304,9 +304,9 @@ module CPUSystem(
                         
                         MuxCSel = 2'b00; // ALUOut (7-0) -> Memory
 
-                        // SP <- SP + 1
+                        // SP <- SP - 1
                         ARF_RegSel = 3'b010; // Enable SP
-                        ARF_FunSel = 2'b01; // Increment SP
+                        ARF_FunSel = 2'b00; // Decrement SP
                     end
                     
                     CALL: begin
@@ -1004,9 +1004,9 @@ module CPUSystem(
                         
                         MuxCSel = 2'b01; // ALUOut (15-8) -> Memory
                         
-                        // SP <- SP + 1
+                        // SP <- SP - 1
                         ARF_RegSel = 3'b010; // Enable SP
-                        ARF_FunSel = 2'b01; // Increment SP
+                        ARF_FunSel = 2'b00; // Decrement SP
                     end
                     
                     CALL: begin
@@ -1531,9 +1531,9 @@ module CPUSystem(
                         
                         MuxCSel = 2'b10; // ALUOut (23-16) -> Memory
                         
-                        // SP <- SP + 1
+                        // SP <- SP - 1
                         ARF_RegSel = 3'b010; // Enable SP
-                        ARF_FunSel = 2'b01; // Increment SP
+                        ARF_FunSel = 2'b00; // Decrement SP
                     end
                     
                     CALL: begin
@@ -1854,6 +1854,8 @@ module CPUSystem(
                         // SP <- SP - 1
                         ARF_RegSel = 3'b010; // Enable SP
                         ARF_FunSel = 2'b00; // Decrement SP
+
+                        T_Reset = 1; // end PSHH
                     end
                     
                     CALL: begin
@@ -2008,11 +2010,6 @@ module CPUSystem(
                         T_Reset = 1; // reset T
                     end
 
-                    PSHH:begin
-                        // SP <- SP - 1
-                        ARF_RegSel = 3'b010; // Enable SP
-                        ARF_FunSel = 2'b00; // Decrement SP
-                    end
                     LDARH: begin
                         /* Select the appropriate register based on the DestReg input*/
                         ARF_RegSel = (DestReg == 3'b000) ? (3'b100) :
@@ -2104,11 +2101,6 @@ module CPUSystem(
             
             T8: begin
 				case(Opcode)
-                    PSHH:begin
-                        // SP <- SP - 1
-                        ARF_RegSel = 3'b010; // Enable SP
-                        ARF_FunSel = 2'b00; // Decrement SP
-                    end
 
                     LDAH: begin
                         /* Load from Memory to DR, then from DR to Rx */
@@ -2141,15 +2133,6 @@ module CPUSystem(
             end
             
             T9: begin
-                case(Opcode)
-                PSHH:begin
-                        // SP <- SP - 1
-                        ARF_RegSel = 3'b010; // Enable SP
-                        ARF_FunSel = 2'b00; // Decrement SP
-
-                        T_Reset = 1; // reset T
-                    end
-                endcase
             end
             
             T10: begin
