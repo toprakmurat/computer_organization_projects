@@ -308,6 +308,19 @@ module CPUSystem(
                         ARF_RegSel = 3'b010; // Enable SP
                         ARF_FunSel = 2'b01; // Increment SP
                     end
+                    
+                    CALL: begin
+						/* 
+							T3: PC gets loaded to S1
+							T4: PC gets VALUE from IROut(7:0)
+							T5: LSB S1 is written to Memory[SP], SP decremented
+							T6: MSB S1 is written to Memory[SP], SP decremented
+						*/
+						ARF_OutCSel = 2'b00; // Select PC
+						MuxASel = 2'b01; // PC is forwarded to RF
+						RF_ScrSel = 4'b1000; // S1 enabled
+						RF_FunSel = 3'b010; // Load
+                    end
 
                     RET:begin
                         ARF_OutDSel = 2'b01; // send SP to Memory as an Address
@@ -1007,6 +1020,19 @@ module CPUSystem(
                         ARF_RegSel = 3'b010; // Enable SP
                         ARF_FunSel = 2'b01; // Increment SP
                     end
+                    
+                    CALL: begin
+						/* 
+							T3: PC gets loaded to S1
+							T4: PC gets VALUE from IROut(7:0)
+							T5: LSB S1 is written to Memory[SP], SP decremented
+							T6: MSB S1 is written to Memory[SP], SP decremented
+						*/
+						
+						MuxBSel = 2'b11;
+						ARF_RegSel = 3'b100; // Only PC
+						ARF_FunSel = 2'b10; // Load
+                    end
 
                     RET:begin
                         ARF_OutDSel = 2'b01; // send SP to Memory as an Address
@@ -1571,7 +1597,30 @@ module CPUSystem(
                         ARF_RegSel = 3'b010; // Enable SP
                         ARF_FunSel = 2'b01; // Increment SP
                     end
-
+                    
+                    CALL: begin
+						/* 
+							T3: PC gets loaded to S1
+							T4: PC gets VALUE from IROut(7:0)
+							T5: LSB S1 is written to Memory[SP], SP decremented
+							T6: MSB S1 is written to Memory[SP], SP decremented
+						*/
+						
+						/* Enable memory address SP */
+						ARF_OutDSel = 2'b01;
+						Mem_CS = 1'b0;
+						Mem_WR = 1'b1;
+						
+						/* Load LSB PC */
+						RF_OutBSel = 3'b100;
+						ALU_FunSel = 5'b10001;
+						MuxCSel = 2'b00;
+						
+						/* SP decremented */
+						ARF_RegSel = 3'b010;
+						ARF_FunSel = 2'b00;
+                    end
+                    
                     RET:begin
                         MuxBSel = 2'b10; // send DR to ARF
 
@@ -1811,7 +1860,32 @@ module CPUSystem(
                         ARF_RegSel = 3'b010; // Enable SP
                         ARF_FunSel = 2'b00; // Decrement SP
                     end
-
+                    
+                    CALL: begin
+						/* 
+							T3: PC gets loaded to S1
+							T4: PC gets VALUE from IROut(7:0)
+							T5: LSB S1 is written to Memory[SP], SP decremented
+							T6: MSB S1 is written to Memory[SP], SP decremented
+						*/
+						
+						/* Enable memory address SP */
+						ARF_OutDSel = 2'b01;
+						Mem_CS = 1'b0;
+						Mem_WR = 1'b1;
+						
+						/* Load MSB PC */
+						RF_OutBSel = 3'b100;
+						ALU_FunSel = 5'b10001;
+						MuxCSel = 2'b01;
+						
+						/* SP decremented */
+						ARF_RegSel = 3'b010;
+						ARF_FunSel = 2'b00;
+						
+						T_Reset = 1; // end CALL
+                    end
+                    
                     LDARH: begin
                         /* Enable memory for reading */
                         ARF_OutDSel = 2'b10;
