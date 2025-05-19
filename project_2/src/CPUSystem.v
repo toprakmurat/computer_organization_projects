@@ -128,7 +128,7 @@ module CPUSystem(
         end
         else
             T <= {T[10:0], T[11]};
-    
+            
         // === Instruction Decode at T2 ===
         if (T == T2) begin
             Opcode   <= ALUSys.IR.IROut[15:10];
@@ -139,7 +139,7 @@ module CPUSystem(
             SrcReg2  <= ALUSys.IR.IROut[3:1];
         end
     end
-
+    
     // =============================================
     // Control Signal Generation (Combinational Logic)
     // =============================================
@@ -184,7 +184,7 @@ module CPUSystem(
                 Mem_WR = 0;
                 IR_LH = 0;
                 IR_Write = 1;
-                ARF_RegSel = 3'b000; // PC
+                ARF_RegSel = 3'b100; // PC
                 ARF_FunSel = 2'b01; // Increment PC for the next fetch
             end
             
@@ -195,15 +195,16 @@ module CPUSystem(
                 ARF_OutDSel = 2'b00;
                 IR_LH = 1;
                 IR_Write = 1;
+                
+                // Instruction decoded, PC incremented
+                ARF_RegSel = 3'b100; // PC
+                ARF_FunSel = 2'b01; // Increment PC, next instruction address
             end
             
             // ========================
             // DECODE Phase
             // ========================
             T2: begin
-                // Instruction decoded, PC incremented
-                ARF_RegSel = 3'b000; // PC
-                ARF_FunSel = 2'b01; // Increment PC, next instruction address
             end
             
             // ========================
@@ -760,47 +761,62 @@ module CPUSystem(
                     end
 
                     MOV:begin
-                        // Source selection 
-
-                        if(SrcReg1 <= (3'b011)) // If the source register is from ARF
-                        begin
-                            ARF_OutCSel = SrcReg1[1:0];
-                        end
-                        else // If the source register is from RF
-                        begin
-                            RF_OutASel = {1'b0, SrcReg1[1:0]};
-                        end  
-
-                        MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
-
-                        ALU_FunSel = 5'b10000; // A->A (32bit)
-        
-                        //Load it
-                        if (DestReg <= 3'b011) // If Destination register is from ARF
-                        begin
-                            MuxBSel    = 2'b00; 
-                            ARF_RegSel = (DestReg == 3'b000) ? (3'b100) : // Enable PC
-                                         (DestReg == 3'b001) ? (3'b010) : // Enable SP
-                                         (DestReg == 3'b010) ? (3'b001) : // Enable AR
-                                         (DestReg == 3'b011) ? (3'b001) : // Enable AR
-                                         3'b000;
-
-                            ARF_FunSel = 2'b10; // Load
-                        end 
-                        else // If Destination register is from RF
-                        begin
-                            MuxASel   = 2'b00; 
-                            RF_RegSel = (DestReg == 3'b100) ? 4'b1000 : //Enable R1
-                                        (DestReg == 3'b101) ? 4'b0100 : //Enable R2
-                                        (DestReg == 3'b110) ? 4'b0010 : //Enable R3
-                                        (DestReg == 3'b111) ? 4'b0001 : //Enable R4
-                                        4'b0000;
-
-                            RF_FunSel  = 3'b010; //Load
-                        end
-                        T_Reset = 1; // reset T
+                    
+						/* SrcReg1 -> DestReg (through ALU) */
+						
+						/* SrcReg1 - B(S1) = DestReg */
+						if (SrcReg1[2] == 0 && DestReg[2] == 0) begin
+							/* From ARF to ARF */
+							ARF_OutCSel = SrcReg1[1:0];
+							MuxBSel = 2'b01;
+							
+							ARF_RegSel = (DestReg == 3'b000) ? (3'b100) :
+										 (DestReg == 3'b001) ? (3'b010) :
+										 (DestReg == 3'b010) ? (3'b001) :
+										 (DestReg == 3'b011) ? (3'b001) :
+										 3'b000;
+							ARF_FunSel = 2'b10;
+						end else if (SrcReg1[2] == 0 && DestReg[2] == 1) begin
+							/* From ARF to RF(Rx) */
+							ARF_OutCSel = SrcReg1[1:0];
+							MuxASel = 2'b01;
+							
+							RF_RegSel = (DestReg == 3'b100) ? (4'b1000) :
+										(DestReg == 3'b101) ? (4'b0100) :
+										(DestReg == 3'b110) ? (4'b0010) :
+										(DestReg == 3'b111) ? (4'b0001) :
+										4'b0000;
+							RF_FunSel = 3'b010;							
+						end else if (SrcReg1[2] == 1 && DestReg[2] == 0) begin
+							/* From RF(Rx) to ARF */
+							ALU_WF = 1'b1;
+							ALU_FunSel = 5'b10001;
+							RF_OutBSel = {1'b0, SrcReg1[1:0]};
+							MuxBSel = 2'b00;							
+							ARF_RegSel = (DestReg == 3'b000) ? (3'b100) :
+										 (DestReg == 3'b001) ? (3'b010) :
+										 (DestReg == 3'b010) ? (3'b001) :
+										 (DestReg == 3'b011) ? (3'b001) :
+										 3'b000;
+							ARF_FunSel = 2'b10;						
+						end else begin
+							/* From RF(Rx) to RF(Rx) */
+							ALU_WF = 1'b1;
+							ALU_FunSel = 5'b10001;
+							RF_OutBSel = {1'b0, SrcReg1[1:0]};
+							MuxASel = 2'b00;
+							
+							RF_RegSel = (DestReg == 3'b100) ? (4'b1000) :
+										(DestReg == 3'b101) ? (4'b0100) :
+										(DestReg == 3'b110) ? (4'b0010) :
+										(DestReg == 3'b111) ? (4'b0001) :
+										4'b0000;
+							RF_FunSel = 3'b010;							
+						end
+						
+						T_Reset = 1; // end DEC
                     end
-
+						
                     MOVL: begin
                         /* Select the appropriate register based on the RegSel input*/
                         RF_RegSel =  (RegSel == 2'b00) ? (4'b1000) :
@@ -1375,7 +1391,7 @@ module CPUSystem(
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
 
                         RF_OutBSel = 3'b100; // Send S1
-                        ALU_FunSel = 5'b11010; // A SUB B (32bit)
+                        ALU_FunSel = 5'b10110; // A SUB B (32bit)
         
                         //Load it
                         if (DestReg <= 3'b011) // If Destination register is from ARF
@@ -1531,7 +1547,7 @@ module CPUSystem(
                         MuxDSel = 1;         // Send AR to A input of ALU
                         RF_OutBSel = 3'b100; // Send OFFSET to B input of ALU
                         
-                        ALU_FunSel = 5'b00100; // Add
+                        ALU_FunSel = 5'b10100; // Add
                         ALU_WF = 1;
                         
                         /* Store the result(effective address) in AR */
@@ -1817,7 +1833,7 @@ module CPUSystem(
                         ARF_OutDSel = 2'b10; // Memory Address
                         
                         RF_OutBSel = {1'b0, RegSel}; // Select Rx
-                        ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
+                        ALU_FunSel = 5'b10001; // ALUOut = B(Rx)
                         MuxCSel = 2'b00; // Load ALUOut[7:0]
                         
                         ARF_RegSel = 2'b001; // Select AR
@@ -1984,7 +2000,7 @@ module CPUSystem(
                         ARF_OutDSel = 2'b10; // Memory Address
                         
                         RF_OutBSel = {1'b0, RegSel}; // Select Rx
-                        ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
+                        ALU_FunSel = 5'b10001; // ALUOut = B(Rx)
                         MuxCSel = 2'b01; // Load ALUOut[15:8]
                                                 
                         ARF_RegSel = 2'b001; // Select AR
@@ -2098,7 +2114,7 @@ module CPUSystem(
                         ARF_OutDSel = 2'b10; // Memory Address
                         
                         RF_OutBSel = {1'b0, RegSel}; // Select Rx
-                        ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
+                        ALU_FunSel = 5'b10001; // ALUOut = B(Rx)
                         MuxCSel = 2'b10; // Load ALUOut[23:16]
                                                 
                         ARF_RegSel = 2'b001; // Select AR
@@ -2137,7 +2153,7 @@ module CPUSystem(
                         ARF_OutDSel = 2'b10; // Memory Address
                         
                         RF_OutBSel = {1'b0, RegSel}; // Select Rx
-                        ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
+                        ALU_FunSel = 5'b10001; // ALUOut = B(Rx)
                         MuxCSel = 2'b11; // Load ALUOut[31:24]
                         
                         T_Reset = 1; // end STRIM
@@ -2163,6 +2179,8 @@ module CPUSystem(
             T11: begin
             end
             
+            default:
+				T_Reset = 1;
         endcase
     end
 endmodule
