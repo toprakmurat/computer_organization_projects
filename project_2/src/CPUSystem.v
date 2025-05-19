@@ -1061,7 +1061,7 @@ module CPUSystem(
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
-
+                        ALU_WF = 1'b1; // ALU Write Flag
                         RF_OutBSel = 3'b100; // Send S1
                         ALU_FunSel = 5'b10111; // A AND B (32bit)
         
@@ -1104,7 +1104,7 @@ module CPUSystem(
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
-
+                        ALU_WF = 1'b1; // ALU Write Flag
                         RF_OutBSel = 3'b100; // Send S1
                         ALU_FunSel = 5'b11000; // A OR B (32bit)
         
@@ -1147,7 +1147,7 @@ module CPUSystem(
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
-
+                        ALU_WF = 1'b1; // ALU Write Flag
                         RF_OutBSel = 3'b100; // Send S1
                         ALU_FunSel = 5'b11001; // A XOR B (32bit)
         
@@ -1190,7 +1190,7 @@ module CPUSystem(
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
-
+                        ALU_WF = 1'b1; // ALU Write Flag
                         RF_OutBSel = 3'b100; // Send S1
                         ALU_FunSel = 5'b11010; // A NAND B (32bit)
         
@@ -1233,7 +1233,7 @@ module CPUSystem(
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
-
+                        ALU_WF = 1'b1; // ALU Write Flag
                         RF_OutBSel = 3'b100; // Send S1
                         ALU_FunSel = 5'b10100; // A + B (32bit)
         
@@ -1276,7 +1276,7 @@ module CPUSystem(
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
-
+                        ALU_WF = 1'b1; // ALU Write Flag
                         RF_OutBSel = 3'b100; // Send S1
                         ALU_FunSel = 5'b10101; // A + B + CARRY (32bit)
         
@@ -1319,7 +1319,7 @@ module CPUSystem(
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
-
+                        ALU_WF = 1'b1; // ALU Write Flag
                         RF_OutBSel = 3'b100; // Send S1
                         ALU_FunSel = 5'b10110; // A SUB B (32bit)
         
@@ -1497,10 +1497,6 @@ module CPUSystem(
 
                         DR_E = 1; // Enable Data Register
                         DR_FunSel = 2'b10; // Left shift DR and load it (0x0000IIYY) (Y = new inputs)
-
-                        // SP <- SP + 1
-                        ARF_RegSel = 3'b010; // Enable SP
-                        ARF_FunSel = 2'b01; // Increment SP
                     end
 
                     POPH:begin
@@ -1567,9 +1563,6 @@ module CPUSystem(
 
                         DR_E = 1; // Enable Data Register
                         DR_FunSel = 2'b10; // Left shift DR and load it (0x0000IIYY) (Y = new inputs)
-                        // SP <- SP + 1
-                        ARF_RegSel = 3'b010; // Enable SP
-                        ARF_FunSel = 2'b01; // Increment SP
                     end
                     
                     INC: begin
