@@ -244,14 +244,6 @@ module CPUSystem(
                     end
 
                     POPL:begin
-                        ARF_OutDSel = 2'b01; // send SP to Memory as an Address
-
-                        Mem_CS = 0; // Enable Memory
-                        Mem_WR = 0; // Read from Memory
-
-                        DR_E = 1; // Enable Data Register
-                        DR_FunSel = 2'b01; // Load DR (0x000000II)
-
                         // SP <- SP + 1
                         ARF_RegSel = 3'b010; // Enable SP
                         ARF_FunSel = 2'b01; // Increment SP
@@ -967,7 +959,7 @@ module CPUSystem(
                         Mem_WR = 0; // Read from Memory
 
                         DR_E = 1; // Enable Data Register
-                        DR_FunSel = 2'b10; // Left shift DR and load it (0x0000IIYY) (Y = new inputs)
+                        DR_FunSel = 2'b01; // Load DR (0x000000II)
 
                         // SP <- SP + 1
                         ARF_RegSel = 3'b010; // Enable SP
@@ -1514,17 +1506,13 @@ module CPUSystem(
             T5: begin
 				case(Opcode)
                     POPL:begin
-                        MuxASel = 2'b11; // send DR to RF
+                        ARF_OutDSel = 2'b01; // send SP to Memory as an Address
 
-                        RF_RegSel = (RegSel == 2'b00) ? (4'b1000) : // enable R1
-                                    (RegSel == 2'b01) ? (4'b0100) : // enable R2
-                                    (RegSel == 2'b10) ? (4'b0010) : // enable R3
-                                    (RegSel == 2'b11) ? (4'b0001) : // enable R4
-                                    4'b0000;
+                        Mem_CS = 0; // Enable Memory
+                        Mem_WR = 0; // Read from Memory
 
-                        RF_FunSel = 3'b010; // load to RF
-
-                        T_Reset = 1; // reset T
+                        DR_E = 1; // Enable Data Register
+                        DR_FunSel = 2'b10; // Left shift DR and load it (0x0000IIYY) (Y = new inputs)
                     end
 
                     POPH:begin
@@ -1847,6 +1835,19 @@ module CPUSystem(
             
             T6: begin
 				case(Opcode)
+                    POPL:begin
+                        MuxASel = 2'b10; // send DR to RF
+
+                        RF_RegSel = (RegSel == 2'b00) ? (4'b1000) : // enable R1
+                                    (RegSel == 2'b01) ? (4'b0100) : // enable R2
+                                    (RegSel == 2'b10) ? (4'b0010) : // enable R3
+                                    (RegSel == 2'b11) ? (4'b0001) : // enable R4
+                                    4'b0000;
+
+                        RF_FunSel = 3'b010; // load to RF
+
+                        T_Reset = 1; // reset T
+                    end
                     POPH:begin
                         ARF_OutDSel = 2'b01; // send SP to Memory as an Address
 
