@@ -593,6 +593,7 @@ module CPUSystem(
                         end
                         else // If the source register is from RF
                         begin
+                            ALU_WF = 1'b1; // ALU write flag
                             ALU_FunSel = 5'b10001; // B->B (32bit)
                             MuxASel = 2'b00; // Send ALU out to RF
 
@@ -613,6 +614,7 @@ module CPUSystem(
                         end
                         else // If the source register is from RF
                         begin
+                            ALU_WF = 1'b1; // ALU write flag
                             ALU_FunSel = 5'b10001; // B->B (32bit)
                             MuxASel = 2'b00; // Send ALU out to RF
 
@@ -633,6 +635,7 @@ module CPUSystem(
                         end
                         else // If the source register is from RF
                         begin
+                            ALU_WF = 1'b1; // ALU write flag
                             ALU_FunSel = 5'b10001; // B->B (32bit)
                             MuxASel = 2'b00; // Send ALU out to RF
 
@@ -653,6 +656,7 @@ module CPUSystem(
                         end
                         else // If the source register is from RF
                         begin
+                            ALU_WF = 1'b1; // ALU write flag
                             ALU_FunSel = 5'b10001; // B->B (32bit)
                             MuxASel = 2'b00; // Send ALU out to RF
 
@@ -673,6 +677,7 @@ module CPUSystem(
                         end
                         else // If the source register is from RF
                         begin
+                            ALU_WF = 1'b1; // ALU write flag
                             ALU_FunSel = 5'b10001; // B->B (32bit)
                             MuxASel = 2'b00; // Send ALU out to RF
 
@@ -693,6 +698,7 @@ module CPUSystem(
                         end
                         else // If the source register is from RF
                         begin
+                            ALU_WF = 1'b1; // ALU write flag
                             ALU_FunSel = 5'b10001; // B->B (32bit)
                             MuxASel = 2'b00; // Send ALU out to RF
 
@@ -713,6 +719,7 @@ module CPUSystem(
                         end
                         else // If the source register is from RF
                         begin
+                            ALU_WF = 1'b1; // ALU write flag
                             ALU_FunSel = 5'b10001; // B->B (32bit)
                             MuxASel = 2'b00; // Send ALU out to RF
 
