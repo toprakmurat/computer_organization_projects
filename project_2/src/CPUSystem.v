@@ -258,6 +258,7 @@ module CPUSystem(
                         // Send selected Rx to ALU
                         RF_OutBSel = {1'b0, RegSel}; // select Rx
 
+                        ALU_WF = 1'b1; // ALU write flag
                         // Send ALU input to ALU output without any change
                         ALU_FunSel = 5'b00001; // B -> B (16bit)
                         
@@ -284,6 +285,7 @@ module CPUSystem(
                         // Send selected Rx to ALU
                         RF_OutBSel = {1'b0, RegSel}; // select Rx
 
+                        ALU_WF = 1'b1; // ALU write flag
                         // Send ALU input to ALU output without any change
                         ALU_FunSel = 5'b10001; // B -> B (32bit)
                         
@@ -775,7 +777,7 @@ module CPUSystem(
 							RF_FunSel = 3'b010;							
 						end
 						
-						T_Reset = 1; // end DEC
+						T_Reset = 1; // end MOV
                     end
 						
                     MOVL: begin
@@ -959,6 +961,7 @@ module CPUSystem(
                         // Send selected Rx to ALU
                         RF_OutBSel = {1'b0, RegSel}; // select Rx
 
+                        ALU_WF = 1'b1; // ALU Write Flag
                         // Send ALU input to ALU output without any change
                         ALU_FunSel = 5'b00001; // B -> B (16bit)
                         
@@ -995,6 +998,7 @@ module CPUSystem(
                         // Send selected Rx to ALU
                         RF_OutBSel = {1'b0, RegSel}; // select Rx
 
+                        ALU_WF = 1'b1; // ALU write flag
                         // Send ALU input to ALU output without any change
                         ALU_FunSel = 5'b10001; // B -> B (32bit)
                         
@@ -1522,6 +1526,7 @@ module CPUSystem(
                         // Send selected Rx to ALU
                         RF_OutBSel = {1'b0, RegSel}; // select Rx
 
+                        ALU_WF = 1'b1; // ALU write flag
                         // Send ALU input to ALU output without any change
                         ALU_FunSel = 5'b10001; // B -> B (32bit)
                         
@@ -1855,6 +1860,7 @@ module CPUSystem(
                         // Send selected Rx to ALU
                         RF_OutBSel = {1'b0, RegSel}; // select Rx
 
+                        ALU_WF = 1'b1; // ALU write flag
                         // Send ALU input to ALU output without any change
                         ALU_FunSel = 5'b10001; // B -> B (32bit)
                         
