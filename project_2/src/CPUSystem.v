@@ -339,7 +339,7 @@ module CPUSystem(
 							RF_OutASel = {1'b0, SrcReg1[1:0]};
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
-
+                        ALU_WF = 1'b1; // ALU write flag
                         ALU_FunSel = 5'b11011; // lsl A (32bit)
 
                         //Load it
@@ -384,7 +384,7 @@ module CPUSystem(
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
-
+                        ALU_WF = 1'b1; // ALU write flag
                         ALU_FunSel = 5'b11100; // lsr A (32bit)
         
                         //Load it
@@ -426,7 +426,7 @@ module CPUSystem(
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
-
+                        ALU_WF = 1'b1; // ALU write flag
                         ALU_FunSel = SrcReg1[2] ? {1'b1, 4'b1101} : {1'b0, 4'b1101}; // asr A (32bit)/(16bit)
         
                         //Load it
@@ -468,7 +468,7 @@ module CPUSystem(
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
-
+                        ALU_WF = 1'b1; // ALU write flag
                         ALU_FunSel = SrcReg1[2] ? {1'b1, 4'b1110} : {1'b0, 4'b1110}; // csl A (32bit)/(16bit)
         
                         //Load it
@@ -510,7 +510,7 @@ module CPUSystem(
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
-
+                        ALU_WF = 1'b1; // ALU write flag
                         ALU_FunSel = SrcReg1[2] ? {1'b1, 4'b1111} : {1'b0, 4'b1111}; // csr A (32bit)/(16bit)
         
                         //Load it
@@ -552,7 +552,7 @@ module CPUSystem(
                         end  
 
                         MuxDSel = (SrcReg1[2] == 1'b0) ? 1'b1 : 1'b0; // if source from ARF/ if source from RF
-
+                        ALU_WF = 1'b1; // ALU write flag
                         ALU_FunSel = 5'b10010; // NOT A (32bit)
         
                         //Load it
