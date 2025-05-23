@@ -1450,7 +1450,7 @@ module CPUSystem(
                         RF_OutBSel = {1'b0, RegSel}; // Select Rx
                         ALU_WF = 1'b1;
                         ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
-                        MuxCSel = 2'b00; // Load ALUOut[7:0]
+                        MuxCSel = 2'b11;// Load ALUOut[31:24]
                                                 
                         ARF_RegSel = 2'b001; // Select AR
                         ARF_FunSel = 2'b01; // Increment
@@ -1799,7 +1799,7 @@ module CPUSystem(
                         RF_OutBSel = {1'b0, RegSel}; // Select Rx
                         ALU_WF = 1'b1;
                         ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
-                        MuxCSel = 2'b01; // Load ALUOut[15:8]
+                        MuxCSel = 2'b10; // Load ALUOut[23:15]
                                                 
                         ARF_RegSel = 2'b001; // Select AR
                         ARF_FunSel = 2'b01; // Increment
@@ -1828,7 +1828,7 @@ module CPUSystem(
                         RF_OutBSel = {1'b0, RegSel}; // Select Rx
                         ALU_WF = 1'b1;
                         ALU_FunSel = 5'b10001; // ALUOut = B(Rx)
-                        MuxCSel = 2'b00; // Load ALUOut[7:0]
+                        MuxCSel = 2'b11; //Load ALUOut[31:24]
                         
                         ARF_RegSel = 2'b001; // Select AR
                         ARF_FunSel = 2'b01; // Increment
@@ -1996,7 +1996,7 @@ module CPUSystem(
                         RF_OutBSel = {1'b0, RegSel}; // Select Rx
                         ALU_WF = 1'b1;
                         ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
-                        MuxCSel = 2'b10; // Load ALUOut[23:15]
+                        MuxCSel = 2'b01; // Load ALUOut[15:8]
                                                 
                         ARF_RegSel = 2'b001; // Select AR
                         ARF_FunSel = 2'b01; // Increment
@@ -2023,7 +2023,7 @@ module CPUSystem(
                         RF_OutBSel = {1'b0, RegSel}; // Select Rx
                         ALU_WF = 1'b1;
                         ALU_FunSel = 5'b10001; // ALUOut = B(Rx)
-                        MuxCSel = 2'b01; // Load ALUOut[15:8]
+                        MuxCSel = 2'b10;// Load ALUOut[23:16]
                                                 
                         ARF_RegSel = 2'b001; // Select AR
                         ARF_FunSel = 2'b01; // Increment
@@ -2114,7 +2114,7 @@ module CPUSystem(
                         RF_OutBSel = {1'b0, RegSel}; // Select Rx
                         ALU_WF = 1'b1;
                         ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
-                        MuxCSel = 2'b11; // Load ALUOut[31:24]
+                        MuxCSel = 2'b00; // Load ALUOut[7:0] 
                                                 
                         T_Reset = 1; // end STA
                     end
@@ -2127,7 +2127,7 @@ module CPUSystem(
                         RF_OutBSel = {1'b0, RegSel}; // Select Rx
                         ALU_WF = 1'b1;
                         ALU_FunSel = 5'b10001; // ALUOut = B(Rx)
-                        MuxCSel = 2'b10; // Load ALUOut[23:16]
+                        MuxCSel = 2'b01; // Load ALUOut[15:8] 
                                                 
                         ARF_RegSel = 2'b001; // Select AR
                         ARF_FunSel = 2'b01; // Increment
@@ -2174,7 +2174,7 @@ module CPUSystem(
                         RF_OutBSel = {1'b0, RegSel}; // Select Rx
                         ALU_WF = 1'b1;
                         ALU_FunSel = 5'b10001; // ALUOut = B(Rx)
-                        MuxCSel = 2'b11; // Load ALUOut[31:24]
+                        MuxCSel = 2'b00; //  Load ALUOut[7:0]
                         
                         T_Reset = 1; // end STRIM
                     end
