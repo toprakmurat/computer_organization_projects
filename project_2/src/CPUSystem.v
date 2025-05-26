@@ -757,7 +757,6 @@ module CPUSystem(
 							RF_FunSel = 3'b010;							
 						end else if (SrcReg1[2] == 1 && DestReg[2] == 0) begin
 							/* From RF(Rx) to ARF */
-							ALU_WF = 1'b1;
 							ALU_FunSel = 5'b10001;
 							RF_OutBSel = {1'b0, SrcReg1[1:0]};
 							MuxBSel = 2'b00;							
