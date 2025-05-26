@@ -258,7 +258,6 @@ module CPUSystem(
                         // Send selected Rx to ALU
                         RF_OutBSel = {1'b0, RegSel}; // select Rx
 
-                        ALU_WF = 1'b1; // ALU write flag
                         // Send ALU input to ALU output without any change
                         ALU_FunSel = 5'b00001; // B -> B (16bit)
                         
@@ -285,7 +284,6 @@ module CPUSystem(
                         // Send selected Rx to ALU
                         RF_OutBSel = {1'b0, RegSel}; // select Rx
 
-                        ALU_WF = 1'b1; // ALU write flag
                         // Send ALU input to ALU output without any change
                         ALU_FunSel = 5'b10001; // B -> B (32bit)
                         
@@ -968,7 +966,6 @@ module CPUSystem(
                         // Send selected Rx to ALU
                         RF_OutBSel = {1'b0, RegSel}; // select Rx
 
-                        ALU_WF = 1'b1; // ALU Write Flag
                         // Send ALU input to ALU output without any change
                         ALU_FunSel = 5'b00001; // B -> B (16bit)
                         
@@ -1005,7 +1002,6 @@ module CPUSystem(
                         // Send selected Rx to ALU
                         RF_OutBSel = {1'b0, RegSel}; // select Rx
 
-                        ALU_WF = 1'b1; // ALU write flag
                         // Send ALU input to ALU output without any change
                         ALU_FunSel = 5'b10001; // B -> B (32bit)
                         
@@ -1448,7 +1444,6 @@ module CPUSystem(
                         Mem_WR = 1;
                         
                         RF_OutBSel = {1'b0, RegSel}; // Select Rx
-                        ALU_WF = 1'b1;
                         ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
                         MuxCSel = 2'b11;// Load ALUOut[31:24]
                                                 
@@ -1535,7 +1530,6 @@ module CPUSystem(
                         // Send selected Rx to ALU
                         RF_OutBSel = {1'b0, RegSel}; // select Rx
 
-                        ALU_WF = 1'b1; // ALU write flag
                         // Send ALU input to ALU output without any change
                         ALU_FunSel = 5'b10001; // B -> B (32bit)
                         
@@ -1561,7 +1555,6 @@ module CPUSystem(
 						
 						/* Load LSB PC */
 						RF_OutBSel = 3'b100;
-                        ALU_WF = 1'b1;
 						ALU_FunSel = 5'b10001;
 						MuxCSel = 2'b00;
 						
@@ -1797,7 +1790,6 @@ module CPUSystem(
                         Mem_WR = 1;
                         
                         RF_OutBSel = {1'b0, RegSel}; // Select Rx
-                        ALU_WF = 1'b1;
                         ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
                         MuxCSel = 2'b10; // Load ALUOut[23:15]
                                                 
@@ -1826,7 +1818,6 @@ module CPUSystem(
                         ARF_OutDSel = 2'b10; // Memory Address
                         
                         RF_OutBSel = {1'b0, RegSel}; // Select Rx
-                        ALU_WF = 1'b1;
                         ALU_FunSel = 5'b10001; // ALUOut = B(Rx)
                         MuxCSel = 2'b11; //Load ALUOut[31:24]
                         
@@ -1873,7 +1864,6 @@ module CPUSystem(
                         // Send selected Rx to ALU
                         RF_OutBSel = {1'b0, RegSel}; // select Rx
 
-                        ALU_WF = 1'b1; // ALU write flag
                         // Send ALU input to ALU output without any change
                         ALU_FunSel = 5'b10001; // B -> B (32bit)
                         
@@ -1901,7 +1891,6 @@ module CPUSystem(
 						
 						/* Load MSB PC */
 						RF_OutBSel = 3'b100;
-                        ALU_WF = 1'b1;
 						ALU_FunSel = 5'b10001;
 						MuxCSel = 2'b01;
 						
@@ -1945,7 +1934,6 @@ module CPUSystem(
                         Mem_WR = 1;
                         
                         // Load from ALU
-                        ALU_WF = 1'b1;
                         ALU_FunSel = 5'b10001;
                         MuxCSel = 2'b01;
                         
@@ -1994,7 +1982,6 @@ module CPUSystem(
                         Mem_WR = 1;
                         
                         RF_OutBSel = {1'b0, RegSel}; // Select Rx
-                        ALU_WF = 1'b1;
                         ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
                         MuxCSel = 2'b01; // Load ALUOut[15:8]
                                                 
@@ -2021,7 +2008,6 @@ module CPUSystem(
                         ARF_OutDSel = 2'b10; // Memory Address
                         
                         RF_OutBSel = {1'b0, RegSel}; // Select Rx
-                        ALU_WF = 1'b1;
                         ALU_FunSel = 5'b10001; // ALUOut = B(Rx)
                         MuxCSel = 2'b10;// Load ALUOut[23:16]
                                                 
@@ -2085,7 +2071,6 @@ module CPUSystem(
                         Mem_WR = 1;
                         
                         // Load from ALU
-                        ALU_WF = 1'b1;
                         ALU_FunSel = 5'b10001;
                         MuxCSel = 2'b00;
                         
@@ -2112,7 +2097,6 @@ module CPUSystem(
                         Mem_WR = 1;
                         
                         RF_OutBSel = {1'b0, RegSel}; // Select Rx
-                        ALU_WF = 1'b1;
                         ALU_FunSel = 5'b00001; // ALUOut = B(Rx)
                         MuxCSel = 2'b00; // Load ALUOut[7:0] 
                                                 
@@ -2125,7 +2109,6 @@ module CPUSystem(
                         ARF_OutDSel = 2'b10; // Memory Address
                         
                         RF_OutBSel = {1'b0, RegSel}; // Select Rx
-                        ALU_WF = 1'b1;
                         ALU_FunSel = 5'b10001; // ALUOut = B(Rx)
                         MuxCSel = 2'b01; // Load ALUOut[15:8] 
                                                 
@@ -2172,7 +2155,6 @@ module CPUSystem(
                         ARF_OutDSel = 2'b10; // Memory Address
                         
                         RF_OutBSel = {1'b0, RegSel}; // Select Rx
-                        ALU_WF = 1'b1;
                         ALU_FunSel = 5'b10001; // ALUOut = B(Rx)
                         MuxCSel = 2'b00; //  Load ALUOut[7:0]
                         
